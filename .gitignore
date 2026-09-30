@@ -42,6 +42,7 @@ yarn-error.*
 .idea/
 .cursor/
 .claude/
+.obsidian/
 *.swp
 .DS_Store
 Thumbs.db
