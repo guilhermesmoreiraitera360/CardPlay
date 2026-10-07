@@ -13,6 +13,8 @@ Cada revisão entra como uma seção datada. O arquivo não substitui o plano ne
 | 2026-10-07 | Etapa 5 — percurso no aplicativo | O cartão do contexto, o alerta e a frase de saldo ficam aceitos. O percurso e a compilação do aplicativo estão em `percurso-etapa5/`. A etapa 6 continua parada |
 | 2026-10-07 | Etapa 6 — consulta do registro | Não avançar como etapa validada. A consulta com uma recarga e uma compra está em arquivo; P2.5 e P3.1 foram escritos no mesmo diff e ainda pedem aceite |
 | 2026-10-07 | Etapa 6 — aceite de P2.5 e P3.1, e ACE-04 | P2.5 e P3.1 ficam aceitos como escritos. ACE-04 foi percorrido: saldo igual ao preço, compra concluída e saldo zero |
+| 2026-10-07 | Etapa 7 — documentos que negavam a compra | Não avançar como etapa validada. As seis frases de I-17 foram reescritas; o título de `docs/backlog.md` ainda chama o arquivo de demandas futuras |
+| 2026-10-07 | Etapa 8 — falha ao efetivar débito ou registro | Não tratar ACE-08 como observado. O diff não altera código; o critério continua sem modo de falha |
 
 ---
 
@@ -826,3 +828,185 @@ Cartão **CP-NYL59G**, id `518814c5-f699-4db0-af64-a52965500247`, titular “ACE
 | Histórico | “Adesivo CardPlay”, “R$ 4,00”, “Quantidade 1” e a recarga “+ R$ 4,00” (`07-historico.png`) |
 
 `compras.json` guarda o `POST /compras` 200: saldo 0,0, produto “Adesivo CardPlay”, valor 4,0, quantidade 1. Não houve segunda compra.
+
+---
+
+## 2026-10-07 — Etapa 7
+
+### Etapa revisada
+
+Etapa 7 de `06-plan.md`: alinhar `docs/product.md`, `docs/ui.md`, `docs/architecture.md`, `docs/backlog.md`, `README.md` e `AGENTS.md` ao comportamento já inspecionado, no ponto em que a compra deixa de ser só backlog. Nenhum ACE novo. Parada na inspeção documental. A etapa 8 continua sem alteração especificável.
+
+O parecer continua neste arquivo. Não há Markdown de execução por etapa.
+
+### Arquivos e propósito
+
+O `git diff` destes seis arquivos é o diff da etapa. Nenhum outro guia entra nele.
+
+| Arquivo | O que a frase antiga dizia (I-17) | O que o diff escreve |
+| --- | --- | --- |
+| `docs/backlog.md` | “Utilizar saldo em produtos”, uma frase, sem regras | O item fica “Atendida” e descreve compra de um produto, quantidade 1, mesma lista das recargas. Estoque, carrinho, checkout e autenticação ficam de fora |
+| `docs/product.md` | Compra fora desta versão; histórico de recargas; botão desabilitado e “Em breve” | O item 6 passa a ser comprar depois de ver nome e preço. O histórico inclui compras. “Comprar produtos” sai de “o que esta versão não faz”. O botão fica desabilitado só sem cartão |
+| `docs/ui.md` | Botão visível, desabilitado, “Em breve”; não implementar compra | Confirmação com nome e preço; cancelar não compra; na web o aviso é na própria tela. O histórico separa recarga com “+” e compra sem “+”. “Em breve” sai da tabela de `azul` |
+| `docs/architecture.md` | Movimentação desta versão é recarga | A compra guarda produto, nome e quantidade; a recarga deixa os três vazios. `ICompraServico` entra na lista dos controllers. A compra debita e grava no mesmo `SaveChanges`, ou rejeita antes |
+| `README.md` | Sem compra; sem endpoint de compra; botão futuro | A compra entra na lista do que existe. A frase “está apenas no backlog” sai. A tabela ganha `POST /api/cartoes/{id}/compras` |
+| `AGENTS.md` | Não implementar compra enquanto estiver só no backlog; botão sempre desabilitado | A compra de um produto com saldo já está implementada. O botão confirma com cartão no contexto e fica desabilitado sem cartão. O mínimo de testes passa a nomear débito, saldo zero e saldo insuficiente |
+
+### Aderência ao plano
+
+O plano pedia atualizar, ou manter de propósito com motivo da etapa 0, cada frase que diz que a compra não existe, que o histórico é só de recargas, ou que o botão permanece desabilitado. Não pedia ACE novo, outro guia, nem a etapa 8.
+
+| Frase de I-17 | Leitura do diff |
+| --- | --- |
+| Backlog sem regra de compra | O item descreve a CP-001. O título do arquivo continua “Demandas futuras” e “Não implementar até serem pedidas” |
+| Produto: compra fora, histórico de recargas, botão desabilitado | As três foram reescritas. “Desabilitado” ficou condicionado à ausência de cartão |
+| UI: “Em breve” e não implementar | As duas saíram. O botão desabilitado ficou condicionado à ausência de cartão |
+| Arquitetura: só recarga | O modelo e o método de compra entram no texto |
+| README: sem compra e sem endpoint | Os dois saíram. A rota nova está na tabela |
+| AGENTS: não implementar enquanto for só backlog | A regra foi substituída. Estoque, carrinho, checkout, autenticação e banco continuam proibidos |
+
+O texto novo acompanha o que as etapas 5 e 6 já mostraram e o que `07-decisoes.md` já registra: confirmação com nome e preço, permanência no catálogo, quantidade 1, histórico com nome do produto e valor sem “+”, recarga com “+”.
+
+### Critérios
+
+Nenhum ACE novo. K2, K5 e I-17 são o critério desta etapa.
+
+| Conflito | Situação na leitura |
+| --- | --- |
+| K2 / P1.5, backlog contra a compra | O item do backlog diz que a demanda foi atendida. O cabeçalho do mesmo arquivo ainda manda não implementar demandas futuras |
+| K5 / P3.2, botão desabilitado | `product.md`, `ui.md`, `README.md` e `AGENTS.md` limitam o desabilitado ao caso sem cartão. “Em breve” não permanece |
+| I-17, histórico só de recargas e ausência de endpoint | Os seis documentos passam a nomear a compra. `README.md` lista `POST /api/cartoes/{id}/compras` |
+
+### Evidências
+
+**Confirmado por artefato**
+
+- `git diff` dos seis arquivos, conferido com a tabela de I-17 em `05-analise-de-impacto.md`.
+- `CartoesController` tem `[HttpPost("{id:guid}/compras")]`. `CompraServico` chama `SalvarAlteracoesAsync`. `MovimentacaoCartao.CriarCompra` grava a descrição “Compra”. `TelaMovimentacoes` usa `nomeProduto` na compra e o prefixo “+ ” só no outro ramo. `CardProduto` abre o aviso quando `Platform.OS === 'web'`. Essas leituras sustentam as frases novas; esta revisão não reexecutou o fluxo.
+- Os nomes `Comprar_SaldoMaiorQuePreco_DebitaPrecoERegistraCompra`, `Comprar_SaldoIgualAoPreco_ConcluiComSaldoZero` e `Comprar_SaldoMenorQuePreco_NaoAlteraSaldoNemRegistraCompra` existem em `CartaoTestes.cs`. `CompraServicoTestes.cs` tem os três casos correspondentes de gravação. Isso sustenta a frase de cobertura do `README.md` e a lista nova de `AGENTS.md` como descrição dos testes que estão no arquivo. Não é execução da suíte.
+
+**Falha**
+
+- Nenhuma falha de compilação ou de teste foi registrada nesta revisão. Ela não rodou build nem testes.
+
+**Não verificado**
+
+- Não há saída nova de `dotnet test` depois deste diff.
+- A etapa 8 continua sem mecanismo e sem diff.
+
+### Desvios
+
+1. **O item atendido continua sob “Demandas futuras”.** `docs/backlog.md` marca “Utilizar saldo em produtos” como atendido e, no mesmo arquivo, abre com “Não implementar até serem pedidas com critérios claros”. O plano pedia atualizar a frase ou manter com motivo da etapa 0. O motivo dessa permanência não está escrito.
+
+### Riscos
+
+- Quem ler só o cabeçalho do backlog pode tratar a compra como demanda ainda proibida. O item, lido por inteiro, diz o contrário.
+- `AGENTS.md` e `README.md` passam a exigir, na lista de testes, comportamentos que os nomes de teste já cobrem. Uma suíte desatualizada no futuro quebraria essa frase sem que esta etapa tenha rodado `dotnet test`.
+
+### Dúvidas para a decisão humana
+
+- O item “Utilizar saldo em produtos” pode permanecer em `docs/backlog.md`, marcado como atendido, debaixo do título de demandas futuras?
+- A etapa 8 segue fora, como o plano deixou, sem alteração?
+
+### Validações pendentes
+
+- Aceite humano do cabeçalho de `docs/backlog.md`, ou correção que separe o item atendido das demandas futuras.
+- A etapa 8 continua sem evidência especificável.
+
+### Recomendação
+
+Não tratar a etapa 7 como validada enquanto o cabeçalho de `docs/backlog.md` e o item atendido convivem sem motivo registrado.
+
+A leitura cruzada mostra que as frases de I-17 sobre compra inexistente, histórico só de recargas, endpoint ausente e botão sempre desabilitado foram reescritas nos seis documentos. O desabilitado que resta está limitado à ausência de cartão, que é o comportamento já inspecionado. Não há ACE novo nem outro guia no diff.
+
+Decisão humana sugerida: aceitar o item atendido dentro do backlog, ou pedir a separação. A etapa 8 não é o avanço seguinte especificável: o plano não define alteração para ela.
+
+---
+
+## 2026-10-07 — Etapa 8
+
+### Etapa revisada
+
+Etapa 8 de `06-plan.md`: observar ACE-08, falha ao efetivar débito ou registro. A alteração prevista é nenhuma. O plano diz que não há como provocar a falha sem inventá-la, e para na decisão de deixar o critério sem evidência automatizada ou de descrever o modo de falha.
+
+O parecer continua neste arquivo. Não há Markdown de execução por etapa.
+
+### Arquivos e propósito
+
+O `git diff` desta etapa é só `docs/demandas/CP-001-compra-com-saldo/07-decisoes.md`, doze linhas. Não há diff de código, teste ou documento de produto.
+
+| Trecho | Papel |
+| --- | --- |
+| Seção “Etapa 8 sem diff” | Registra que não houve alteração e que ACE-08 e P1.4 continuam sem evidência |
+| Linha de P1.4 em “Ainda abertas” | Troca “3 e 8” por “permanece aberto; a etapa 8 não criou rastro” |
+| Linha de ACE-08 em “Ainda abertas” | Troca “8” por “permanece sem modo de falha; a etapa 8 não teve diff” |
+
+### O que o texto afirma, e o que o código já faz
+
+Leitura do diff e dos arquivos citados por ele. Esta revisão não executou a compra.
+
+`CompraServico.ComprarAsync` lança `CartaoNaoEncontradoException` ou `ProdutoNaoEncontradoException` antes de `Comprar` e antes de `SalvarAlteracoesAsync`. `Cartao.Comprar` lança `SaldoInsuficienteException` quando `Saldo < produto.Preco`, antes de debitar e antes de criar a movimentação. `TratadorExcecoes` manda exceção não nomeada para HTTP 500, título “Erro interno”, com `Detail` igual à mensagem da exceção.
+
+Essas recusas acontecem antes da gravação, ou mapeiam uma exceção qualquer para 500. Nenhuma delas é um `SaveChanges` que falha depois de o débito existir só na memória, nem uma mensagem específica de compra não concluída.
+
+### Aderência ao plano
+
+| Pedido da etapa 8 | Leitura do diff |
+| --- | --- |
+| Observar ACE-08 | Não há captura, teste nem falha de gravação |
+| Não exigir nem proibir rastro (P1.4) | O diff não cria rastro e deixa P1.4 aberto |
+| Nenhuma alteração especificável; nenhum componente proposto | Não há arquivo de código no diff |
+| Não inventar falha artificial, teste de SQLite ou transação extra | O diff não introduz esses três |
+| A revisão decide se o critério fica sem evidência ou se o modo de falha é descrito | O próprio diff escreve “ACE-08 continua critério sem evidência”. Não há resposta humana anterior a esse texto |
+
+### Critérios
+
+| Critério | Nesta etapa | Situação |
+| --- | --- | --- |
+| ACE-08, cenários A e B | O cliente seria informado de compra não concluída, o saldo anterior permaneceria, e não haveria débito órfão nem compra concluída sem débito | Não verificado. Não há falha de efetivação nomeada |
+| P1.4 | Rastro de tentativa que não seja compra concluída | Continua sem decisão e sem diff |
+
+### Evidências
+
+**Confirmado por artefato**
+
+- `git diff` de `07-decisoes.md`: a seção nova e as duas linhas da tabela. Nenhum outro arquivo entra nesse diff.
+- `CompraServico.cs`, `Cartao.cs` e `TratadorExcecoes.cs`, lidos nesta revisão, sustentam o que a seção diz sobre as recusas que já existem. Essa leitura não é uma execução de ACE-08.
+
+**Falha**
+
+- Nenhuma falha de compilação ou de teste foi registrada. Esta revisão não rodou build nem testes.
+
+**Não verificado**
+
+- Informação ao cliente de que a compra não foi concluída por falha de gravação.
+- Saldo anterior mantido depois de uma gravação que falha.
+- Ausência de débito órfão e de compra concluída sem débito nesse caso.
+- P1.4.
+
+### Desvios
+
+1. **A escolha do ponto de parada foi escrita no mesmo diff.** O plano entrega à revisão a decisão entre “critério sem evidência automatizada” e “descrever o modo de falha”. `07-decisoes.md` adota a primeira no texto da etapa. Não há registro anterior dessa escolha.
+
+### Riscos
+
+- Ler “Etapa 8 sem diff” como se ACE-08 tivesse sido observado. O título da seção e as linhas da tabela dizem o contrário: o critério permanece sem modo de falha.
+- Uma exceção não mapeada devolve HTTP 500 com a mensagem da exceção. Isso não distingue “compra não concluída” de outro erro interno, e não prova que o saldo gravado ficou intacto.
+
+### Dúvidas para a decisão humana
+
+- ACE-08 permanece critério sem evidência automatizada e sem modo de falha descrito?
+- Ou o modo de falha passa a ser descrito, fora do que este plano autoriza a implementar?
+
+### Validações pendentes
+
+- Aceite humano de uma das duas saídas do ponto de parada. Sem ele, o texto da etapa é a escolha escrita no mesmo diff.
+- ACE-08 e P1.4 continuam sem observação.
+
+### Recomendação
+
+Não tratar ACE-08 como observado e não abrir alteração de código a partir desta etapa.
+
+O diff faz o que o plano previa como alteração: nada em código, teste ou documento de produto. Não inventa falha artificial. Também não mostra a informação de compra não concluída, o saldo anterior preservado depois de uma gravação falha, nem a ausência de débito órfão.
+
+Decisão humana sugerida: aceitar que ACE-08 fica critério sem evidência, ou pedir a descrição do modo de falha. O plano declara que para aqui. Sem essa escolha, a etapa não está validada.

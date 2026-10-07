@@ -20,7 +20,7 @@ SQLite
 
 Application orquestra o caso de uso e fala com o domínio. Persistência e APIs externas ficam em camadas de infraestrutura no mesmo nível: Repository e Services.
 
-Nesta versão **não há** chamadas a serviços externos. `CardPlay.Services` existe para marcar esse lugar; a recarga e o catálogo passam só por Application → Repository → SQLite.
+Nesta versão **não há** chamadas a serviços externos. `CardPlay.Services` existe para marcar esse lugar; a recarga, a compra e o catálogo passam só por Application → Repository → SQLite.
 
 ## Dependências reais entre projetos
 
@@ -62,11 +62,11 @@ flowchart TB
   Services --> Externos
 ```
 
-O Api é o composition root: registra `DbContext`, repositórios e, no futuro, clientes externos. Os controllers dependem das interfaces da Application (`ICartaoServico`, `IProdutoServico`). As implementações desses casos de uso também ficam na Application.
+O Api é o composition root: registra `DbContext`, repositórios e, no futuro, clientes externos. Os controllers dependem das interfaces da Application (`ICartaoServico`, `IProdutoServico`, `ICompraServico`). As implementações desses casos de uso também ficam na Application.
 
 ## Por que Application e Services estão separados
 
-Application guarda contratos, DTOs e a orquestração interna (solicitar cartão, recarregar, listar produtos).
+Application guarda contratos, DTOs e a orquestração interna (solicitar cartão, recarregar, comprar, listar produtos).
 
 Services consome APIs que **não** pertencem ao CardPlay. Não implementa caso de uso. Fica no mesmo nível do Repository.
 
@@ -75,10 +75,12 @@ Sem essa regra, a camada Services vira um segundo Application e a dependência c
 ## Modelo
 
 - **Cartao:** id, nome do titular, código amigável (`CP-XXXXXX`), saldo (`decimal`) e data de criação.
-- **MovimentacaoCartao:** valor, descrição e data/hora. Nesta versão, só recargas.
+- **MovimentacaoCartao:** valor, descrição e data/hora. A compra também guarda o id do produto, o nome e a quantidade. A recarga deixa esses três campos vazios.
 - **Produto:** nome, descrição curta, preço, ícone/emoji e disponibilidade. Os registros iniciais vêm de seed, não de uma tela admin.
 
 A recarga é um método do domínio. Se o valor for menor ou igual a zero, o domínio rejeita. Caso contrário, soma o saldo e cria a movimentação. O repositório grava os dois no mesmo `SaveChanges`.
+
+A compra é outro método do domínio. Se o saldo for menor que o preço, rejeita antes de alterar o cartão. Caso contrário, debita o preço e cria a movimentação da compra, com quantidade 1. A Application grava saldo e movimentação no mesmo `SaveChanges`. A descrição gravada é “Compra”; a tela de histórico mostra o nome do produto.
 
 ## Frontend
 

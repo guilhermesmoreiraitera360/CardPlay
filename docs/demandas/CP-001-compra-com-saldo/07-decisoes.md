@@ -65,16 +65,24 @@ A consulta continua a aba Histórico, a mesma lista de P1.1.
 
 Aceitos em 2026-10-07 como estão escritos nesta seção. A compra usa o nome do produto como título e não repete a descrição “Compra”.
 
+## Etapa 8 sem diff
+
+O plano não descreve como provocar a falha de gravação e diz que falha artificial, teste de SQLite ou transação extra seria desenho que a demanda não pediu. Não há alteração de código, teste ou documento de produto nesta etapa.
+
+ACE-08 continua critério sem evidência: não há modo nomeado de fazer o `SaveChanges` da compra falhar. P1.4 continua em aberto: não há rastro de tentativa.
+
+O que já existe não observa ACE-08. Saldo insuficiente, cartão ausente e produto ausente lançam antes de `SalvarAlteracoesAsync`. Uma exceção não mapeada segue para HTTP 500 no `TratadorExcecoes`. Nenhuma dessas recusas é uma gravação que falha no meio do débito.
+
 ## Ainda abertas
 
 Estas respostas não existem. A etapa correspondente segue sem diff até serem registradas.
 
 | Bloqueio | Etapas que continuam paradas |
 | --- | --- |
-| P1.4, rastro de tentativa que não seja compra concluída | 3 e 8 |
+| P1.4, rastro de tentativa que não seja compra concluída | permanece aberto; a etapa 8 não criou rastro |
 | P1.3, algo além de saldo debitado e registro | fora do plano, se a revisão exigir |
 | P3.3, para onde o cliente vai depois | fora do plano |
 | P2.3, preço se o cadastro mudar antes da confirmação | fora do plano |
 | P2.4, cartão não selecionado ou id local inválido | fora do plano |
 | K4, autenticação, estoque, checkout e banco | plano novo, se a resposta for incluí-los |
-| ACE-08, como provocar a falha de efetivação | 8 |
+| ACE-08, como provocar a falha de efetivação | permanece sem modo de falha; a etapa 8 não teve diff |
