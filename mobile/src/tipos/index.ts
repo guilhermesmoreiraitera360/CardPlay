@@ -11,6 +11,15 @@ export type Movimentacao = {
   valor: number;
   descricao: string;
   dataHora: string;
+  produtoId?: string | null;
+  nomeProduto?: string | null;
+  quantidade?: number | null;
+};
+
+export type Compra = {
+  cartaoId: string;
+  saldo: number;
+  registro: Movimentacao;
 };
 
 export type Produto = {

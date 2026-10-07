@@ -1,5 +1,5 @@
 import { clienteHttp } from './clienteHttp';
-import type { Cartao, Movimentacao } from '../tipos';
+import type { Cartao, Compra, Movimentacao } from '../tipos';
 
 export const cartaoApi = {
   solicitar(nomeTitular: string): Promise<Cartao> {
@@ -12,6 +12,10 @@ export const cartaoApi = {
 
   recarregar(id: string, valor: number, descricao?: string): Promise<Cartao> {
     return clienteHttp.post<Cartao>(`/api/cartoes/${id}/recargas`, { valor, descricao });
+  },
+
+  comprar(id: string, produtoId: string): Promise<Compra> {
+    return clienteHttp.post<Compra>(`/api/cartoes/${id}/compras`, { produtoId });
   },
 
   listarMovimentacoes(id: string): Promise<Movimentacao[]> {

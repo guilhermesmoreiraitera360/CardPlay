@@ -4,7 +4,7 @@ namespace CardPlay.Application.Contratos.Servicos;
 
 public interface ICompraServico
 {
-    Task<CartaoResposta> ComprarAsync(
+    Task<CompraResposta> ComprarAsync(
         Guid cartaoId,
         Guid produtoId,
         CancellationToken cancellationToken = default);

@@ -22,6 +22,11 @@ public class CompraServicoTestes
 
         Assert.Equal(41.50m, resposta.Saldo);
         Assert.True(resposta.Saldo >= 0m);
+        Assert.Equal(cartao.Id, resposta.CartaoId);
+        Assert.Equal(produto.Id, resposta.Registro.ProdutoId);
+        Assert.Equal(produto.Nome, resposta.Registro.NomeProduto);
+        Assert.Equal(1, resposta.Registro.Quantidade);
+        Assert.Equal(produto.Preco, resposta.Registro.Valor);
         Assert.Equal(1, cartoes.VezesSalvo);
         var compra = Assert.Single(cartao.Movimentacoes, movimentacao => movimentacao.ProdutoId == produto.Id);
         Assert.Equal(produto.Nome, compra.NomeProduto);

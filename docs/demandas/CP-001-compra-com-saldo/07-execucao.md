@@ -8,6 +8,8 @@ Cada revisão entra como uma seção datada. O arquivo não substitui o plano ne
 | 2026-10-07 | Etapa 2 — modelo do registro no SQLite | Não avançar como etapa validada. Investigar a compilação que o plano exige. O diff de persistência não pede correção por si |
 | 2026-10-07 | Etapa 2 — resolução do diff de persistência | Os dois pontos de modelo ficam como estão. A solution compilou. A etapa 3 continua parada até inspeção desta resolução |
 | 2026-10-07 | Etapa 3 — orquestração da compra | Não avançar como etapa validada. O caso de uso está no código; falta saída de testes e falta decisão sobre o retorno e as exceções |
+| 2026-10-07 | Etapa 4 — compra por HTTP | Não avançar como etapa validada. Há um corpo de sucesso gravado; faltam as respostas de recusa e a saída da suíte |
+| 2026-10-07 | Etapa 5 — confirmação na interface | Não avançar como etapa validada. O gesto está no código; o fluxo no aplicativo não foi percorrido |
 
 ---
 
@@ -418,3 +420,239 @@ Não avançar para a etapa 4 tratando a etapa 3 como validada.
 O fluxo pedido está no código: uma leitura dos dois ids, a regra da etapa 1, uma gravação no sucesso e nenhuma gravação nas três recusas, sem controller. Falta saída verificável dos testes. Ficam também três escolhas que a etapa 4 herdaria: o tipo `CompraServico`, o retorno só com o cartão e as duas mensagens de ausência.
 
 Decisão humana sugerida: aceitar esses três pontos ou pedir correção antes do HTTP, e guardar a saída da suíte. Sem essa saída, a etapa não está validada.
+
+---
+
+## 2026-10-07 — Etapa 4
+
+### Etapa revisada
+
+Etapa 4 de `06-plan.md`: receber a confirmação, chamar a orquestração e devolver saldo e registro, ou a informação de recusa, sem regra de saldo no controller. Parar antes do aplicativo.
+
+O parecer continua neste arquivo. Não há Markdown de execução por etapa.
+
+### Arquivos e propósito
+
+Estado lido no Git desta revisão: oito arquivos modificados e dois não rastreados. `mobile/` não aparece nesse conjunto.
+
+| Arquivo | Papel no diff |
+| --- | --- |
+| `backend/src/CardPlay.Application/Dtos/CompraRequisicao.cs` | Arquivo novo. Corpo com `ProdutoId` |
+| `backend/src/CardPlay.Application/Dtos/CompraResposta.cs` | Arquivo novo. `CartaoId`, `Saldo` e `Registro` |
+| `backend/src/CardPlay.Application/Dtos/MovimentacaoResposta.cs` | Acrescenta `ProdutoId`, `NomeProduto` e `Quantidade`, anuláveis |
+| `backend/src/CardPlay.Application/Mapeamentos/MapeadorCartao.cs` | Copia esses três campos da movimentação para o DTO |
+| `backend/src/CardPlay.Application/Contratos/Servicos/ICompraServico.cs` | `ComprarAsync` passa a devolver `CompraResposta` |
+| `backend/src/CardPlay.Application/Servicos/CompraServico.cs` | O retorno leva o saldo do cartão e a movimentação recém-criada |
+| `backend/src/CardPlay.Api/Controllers/CartoesController.cs` | `POST {id}/compras` chama `ComprarAsync` e devolve `Ok` |
+| `backend/src/CardPlay.Api/Tratamento/TratadorExcecoes.cs` | Saldo insuficiente entra no 400 já usado pela recarga inválida. Produto ausente entra no 404 já usado pelo cartão ausente |
+| `backend/tests/CardPlay.Tests/CompraServicoTestes.cs` | O teste de saldo maior passa a afirmar `CartaoId` e os campos do `Registro` |
+| `docs/demandas/CP-001-compra-com-saldo/07-decisoes.md` | A seção “HTTP fechado na etapa 4” registra rota, corpo, 400 e 404 no mesmo conjunto de arquivos |
+
+### O que o código faz
+
+Leitura dos arquivos, sem execução nesta revisão.
+
+`Comprar` no controller recebe o id da rota e `ProdutoId` do corpo, chama o serviço e devolve o resultado. Não compara saldo nem preço.
+
+`CompraResposta` carrega o id do cartão, o saldo depois da operação e o `Registro`. O registro é `MovimentacaoResposta`, que agora também tem produto, nome e quantidade. `ListarMovimentacoes` devolve esse mesmo DTO, então a listagem passa a incluir os três campos. Recarga não os preenche no domínio; no DTO ficam nulos.
+
+`TratadorExcecoes` traduz `SaldoInsuficienteException` para HTTP 400, título “Requisição inválida”. Traduz `ProdutoNaoEncontradoException` para HTTP 404, título “Recurso não encontrado”, o mesmo título de `CartaoNaoEncontradoException`. O `detail` continua a mensagem de cada exceção: “Saldo insuficiente para concluir a compra.”, “Cartão {id} não foi encontrado.” e “Produto {id} não foi encontrado.”
+
+### Aderência ao plano
+
+O plano pedia a confirmação na API, saldo e registro na resposta, ou a informação de recusa, sem regra de saldo no controller. Pedia também o corpo observado numa chamada, não só o DTO em C#. Rota, verbo e status não estavam escolhidos. Estender `MovimentacaoResposta` ou criar outra leitura dependia de P1.1 e P1.2, já respondidos em `07-decisoes.md` como a mesma lista e campos próprios. O cliente em `mobile/src/api/` não devia mudar nesta etapa.
+
+| Pedido da etapa 4 | Leitura do diff |
+| --- | --- |
+| Receber a confirmação e chamar a orquestração | `POST /api/cartoes/{id}/compras` chama `ComprarAsync` |
+| Devolver saldo e registro | `CompraResposta` tem `Saldo` e `Registro` |
+| Sem regra de saldo no controller | A action não lê preço nem saldo |
+| Traduzir recusa | 400 para saldo insuficiente; 404 para cartão ou produto ausente |
+| Não alterar o cliente | Nenhum arquivo de `mobile/` neste diff |
+| Campos do registro na mesma lista | `MovimentacaoResposta` ganha produto, nome e quantidade, e a listagem usa esse DTO |
+| Corpo observado, não só o DTO | Um arquivo de corpo de sucesso existe. As outras chamadas pedidas pelo plano não estão nesse arquivo |
+
+### Critérios
+
+“Confirmado” abaixo separa código, o corpo gravado e o que não tem registro.
+
+| Critério | Nesta etapa | Situação |
+| --- | --- | --- |
+| ACE-01, forma geral | O arquivo `/tmp/compra-cafe.json` contém `saldo` 41.5, `registro.valor` 8.5, `quantidade` 1, `nomeProduto` “Café especial” e `produtoId` `6f1c2a7e-0c4a-4b1d-9e2f-1a2b3c4d5e6f`. Esse id, em `ProdutoConfiguracao`, é o café do seed a 8,50. O JSON não traz o saldo anterior | Corpo de sucesso alinhado ao preço do seed e a um saldo final de 41,5. O saldo anterior dessa chamada não está no arquivo. Execução da suíte não verificada |
+| ACE-01, par R$ 50 / R$ 20 / R$ 30 | Continua fora da meta | Fora desta etapa |
+| ACE-02 | A ordem “ver e depois confirmar” é a etapa 5 | Fora desta etapa |
+| ACE-03 | O serviço grava e devolve a mesma movimentação no `Registro`. O corpo gravado traz valor, data/hora, produto e quantidade juntos com o saldo | Código e esse corpo alinhados. Não há, no log lido, o par débito e registro dentro de um único `SaveChanges` com os valores dos parâmetros: o log marca os parâmetros com `?` |
+| ACE-04 | Nenhum corpo gravado mostra saldo zero | Não verificado na API |
+| ACE-05 | O corpo de sucesso tem saldo 41.5. Os outros finais não estão em arquivo de resposta | Só o sucesso está no arquivo. O restante não verificado |
+| ACE-06 | O código traduz a exceção para 400 e o `detail` é a frase de saldo insuficiente. Não há arquivo com essa resposta HTTP | Código alinhado. Resposta HTTP não verificada nesta revisão |
+| ACE-07 | Os dois casos caem em 404 com o mesmo título e `detail` diferente. Não há arquivo com essas respostas | Status comum está no código. A informação não é a mesma frase. Resposta HTTP não verificada |
+| ACE-08 | Sem mecanismo de falha de gravação | Fora desta etapa |
+
+### Evidências
+
+**Confirmado por artefato**
+
+- `git status` e `git diff` desta revisão mostram os dez arquivos da tabela. Não há alteração em `mobile/`.
+- `/tmp/compra-cafe.json` contém o JSON citado em ACE-01, com nomes em camelCase: `cartaoId`, `saldo`, `registro`, `produtoId`, `nomeProduto`, `quantidade`, `dataHora`.
+- O log do processo em `127.0.0.1:5099`, com `Data Source=/tmp/cardplay-etapa4.db`, registra a aplicação da migration `20261007183202_ProdutoEQuantidadeNaMovimentacao`, inclusive `ADD "NomeProduto"`, `ADD "ProdutoId"` e `ADD "Quantidade"`. Os `INSERT` e `SELECT` de `MovimentacoesCartao` nesse log incluem essas colunas. O processo encerrou com código 137.
+- O log de `localhost:5080` em `1.txt` continua com “No migrations were applied” e não lista as colunas novas. Não é evidência desta rota.
+
+**Falha**
+
+- Nenhuma falha de compilação ou de resposta HTTP foi lida nesta revisão. Esta revisão não rodou build nem testes.
+
+**Não verificado**
+
+- Não há saída de `dotnet test` nem de `dotnet build` posterior a estes arquivos. O registro anterior de 16 testes é anterior a `CompraServicoTestes`.
+- Não há arquivo de resposta para saldo igual ao preço, saldo menor, cartão ausente ou produto ausente. O log SQL não mostra status HTTP nem o valor dos parâmetros.
+- ACE-08 e a ordem de confirmação na interface continuam fora desta etapa.
+
+### Desvios
+
+1. **Rota e status foram escolhidos neste diff.** O plano dizia que verbo, caminho e código HTTP não estavam escolhidos. O código usa `POST /api/cartoes/{id}/compras`, 400 e 404. `07-decisoes.md` descreve isso na seção “HTTP fechado na etapa 4”, escrita junto com o código.
+
+2. **ACE-07 permanece com duas frases.** Os dois casos usam o título “Recurso não encontrado” e HTTP 404. O `detail` continua “Cartão {id} não foi encontrado.” ou “Produto {id} não foi encontrado.” O critério pede uma informação de dado inválido para os dois.
+
+3. **A listagem muda de corpo junto com a compra.** `MovimentacaoResposta` ganha três campos. `GET /api/cartoes/{id}/movimentacoes` passa a enviá-los. P1.1 e P1.2 já pediam a mesma lista com campos próprios. O plano também avisava que estender esse DTO muda o corpo que `listarMovimentacoes` já consome. O aplicativo não foi atualizado nesta etapa, como o plano pedia.
+
+### Riscos
+
+- A tela de histórico ainda pode mostrar o valor da compra com o prefixo de crédito. Isso é a etapa 6. O corpo da listagem já traz a compra e a recarga no mesmo JSON.
+- O processo de `localhost:5080` visto em `1.txt` não aplicou a migration nova. Subir essa API antiga contra o código atual, ou o contrário, mistura esquema e rota.
+- O corpo em `/tmp/compra-cafe.json` veio de `/tmp/cardplay-etapa4.db`, não do `cardplay.db` do projeto. O arquivo não guarda o saldo anterior nem o status HTTP da resposta.
+- `8.5` e `41.5` são o JSON de 8,50 e 41,50. O texto não conserva o zero dos centavos.
+
+### Dúvidas para a decisão humana
+
+- `POST /api/cartoes/{id}/compras`, 400 e 404 ficam aceitos como o contrato?
+- As duas frases de cartão ausente e produto ausente ficam distintas, com o mesmo título 404?
+- Estender `MovimentacaoResposta` na listagem, antes da etapa 6, fica aceito?
+
+### Validações pendentes
+
+- Guardar as respostas HTTP de saldo igual ao preço, saldo menor, cartão ausente e produto ausente. O plano pede essas chamadas com o corpo observado. Esta revisão não as encontrou em arquivo.
+- Rodar `dotnet test backend/CardPlay.sln` e guardar a saída. Esta revisão não fez isso.
+- ACE-02, o gesto na interface e ACE-08 continuam nas etapas em que o plano os colocou.
+
+### Recomendação
+
+Não avançar para a etapa 5 tratando a etapa 4 como validada.
+
+O controller encaminha a confirmação e o retorno de sucesso tem saldo e registro. Um corpo gravado mostra a compra do café do seed a 8,50 com saldo 41,5, quantidade 1 e o nome do produto, em camelCase. Faltam, em arquivo, as respostas de saldo insuficiente, de dado ausente e de saldo igual ao preço, e falta a saída da suíte. Rota, status e as duas frases de ausência foram registrados no mesmo diff que o código.
+
+Decisão humana sugerida: aceitar esse contrato ou pedir correção antes da interface, e guardar as chamadas que ainda não estão em arquivo. Sem isso, a etapa não está validada.
+
+---
+
+## 2026-10-07 — Etapa 5
+
+### Etapa revisada
+
+Etapa 5 de `06-plan.md`: o cliente identifica o cartão, seleciona o produto, vê o produto e o valor, e só então confirma, usando a API da etapa 4. Sem tela nova e sem mudar a leitura do histórico.
+
+O parecer continua neste arquivo. Não há Markdown de execução por etapa.
+
+O conjunto de trabalho ainda contém os arquivos da etapa 4. Eles não são a alteração desta etapa. A leitura abaixo usa o diff de `mobile/` e a seção “Interface fechada na etapa 5” de `07-decisoes.md`.
+
+### Arquivos e propósito
+
+| Arquivo | Papel no diff |
+| --- | --- |
+| `mobile/src/api/cartaoApi.ts` | `comprar` envia `POST /api/cartoes/{id}/compras` com `produtoId` |
+| `mobile/src/tipos/index.ts` | `Compra` com `cartaoId`, `saldo` e `registro`. `Movimentacao` ganha `produtoId`, `nomeProduto` e `quantidade` opcionais |
+| `mobile/src/estado/CartaoContexto.tsx` | `comprar` chama a API, grava o saldo devolvido e busca de novo as movimentações |
+| `mobile/src/componentes/CardProduto.tsx` | “Usar cartão” deixa de ficar sempre desabilitado. Com cartão, o toque abre a confirmação com nome e preço |
+| `mobile/src/telas/TelaCatalogo.tsx` | Liga o botão ao cartão do contexto, mostra o saldo e a mensagem de erro ou de compra registrada |
+| `docs/demandas/CP-001-compra-com-saldo/07-decisoes.md` | A seção “Interface fechada na etapa 5” registra o gesto, o botão, o cartão do contexto, o texto da API e a permanência no catálogo |
+
+Não há diff em `TelaMovimentacoes.tsx`, `mobile/src/tema/cores.ts` nem na barra de abas.
+
+### O que o código faz
+
+Leitura dos arquivos, sem execução nesta revisão.
+
+O card continua mostrando nome, descrição e `formatarMoeda(produto.preco)` antes do botão. O preço vem da lista de `produtoApi.listar`. Sem cartão no contexto, o botão fica desabilitado e o texto secundário é “Solicite um cartão”. Com cartão, o botão usa `cores.laranja` e o toque abre `Alert.alert` com o nome e o mesmo preço. Cancelar não chama `onConfirmar`. Confirmar chama `comprar(produto.id)`.
+
+`comprar` usa `cartao.id` do `CartaoProvider`. Se a API responde, o contexto substitui o saldo pelo `compra.saldo` e substitui `movimentacoes` pelo retorno de `listarMovimentacoes`. Se a API falha, `setCartao` não roda. O catálogo mostra `falha.message` em coral. `clienteHttp` monta essa mensagem com `detail` ou `title`.
+
+Depois do sucesso, a tela permanece no catálogo e escreve “Compra registrada. Saldo:” com o saldo devolvido. A linha “Saldo atual” lê `cartao.saldo` do contexto.
+
+### Aderência ao plano
+
+O plano pedia a confirmação depois de o produto e o valor estarem visíveis, o cliente HTTP em `mobile/src/api/`, a atualização do `CartaoProvider` como a recarga já faz, e a parada antes da leitura do histórico. Não pedia tela nova, mudança de `cores.ts` nem da barra de abas. P2.2 e P3.2 estavam em aberto. O plano dizia que o id em `@cardplay/cartaoId` não seria a identificação de RN02 até a etapa 0 dizer isso.
+
+| Pedido da etapa 5 | Leitura do diff |
+| --- | --- |
+| Ver produto e preço antes de confirmar | Nome e preço estão acima do botão. A API só é chamada no “Confirmar” do alerta |
+| Valor visto igual ao preço do catálogo | O alerta usa `produto.preco` do mesmo objeto exibido no card |
+| Cliente HTTP da operação da etapa 4 | `cartaoApi.comprar` aponta para `POST /api/cartoes/${id}/compras` |
+| Atualizar o contexto depois do sucesso | `setCartao` com o saldo devolvido e nova leitura das movimentações |
+| Sem tela nova | Não há rota nem tela nova. O passo extra é `Alert.alert` |
+| Sem mudança de histórico | `TelaMovimentacoes.tsx` não entra no diff |
+| Sem `cores.ts` e sem barra de abas | Esses arquivos não entram no diff |
+| Evidência no fluxo do aplicativo | Não há sessão, captura nem chamada HTTP disparada por essa tela |
+
+### Critérios
+
+“Confirmado” abaixo é leitura de código. O plano pede o fluxo no aplicativo. Essa execução não está registrada.
+
+| Critério | Nesta etapa | Situação |
+| --- | --- | --- |
+| ACE-02 | O código só confirma depois de o card já ter desenhado nome e preço, e o alerta repete os dois. O preço do alerta é o do produto listado | Ordem alinhada no código. Fluxo não verificado |
+| ACE-01, trecho em que o gatilho é a confirmação | Confirmar chama `comprar`. O sucesso grava `compra.saldo` no contexto. Não há observação de saldo anterior menos o preço do seed | Código do gatilho alinhado. Resultado no aplicativo não verificado |
+| ACE-04 | O mesmo `comprar` serve para saldo igual ao preço. Não há caminho separado nem observação de saldo zero | Não verificado |
+| ACE-06, gatilho do cliente | A falha da API não altera o cartão no contexto e o catálogo mostra a mensagem da exceção. O texto esperado da API é o `detail` de saldo insuficiente | Código alinhado. Fluxo com saldo menor não verificado |
+| ACE-07 | P2.4 ficou de fora. Sem cartão, o botão não chama a API. Isso não informa “dado inválido” | Fora do que a etapa 0 equiparou a dado inválido |
+
+### Evidências
+
+**Confirmado por artefato**
+
+- `git diff` de `mobile/src/api/cartaoApi.ts`, `CardProduto.tsx`, `CartaoContexto.tsx`, `TelaCatalogo.tsx` e `tipos/index.ts`, mais a seção de interface em `07-decisoes.md`.
+- `TelaMovimentacoes.tsx`, `cores.ts` e a barra de abas não aparecem nesse diff.
+
+**Falha**
+
+- O único comando de TypeScript registrado nesta pasta de terminais é `npx tsc --noEmit` em `mobile/`, código de saída 1. A saída é `FETCH_ERROR` ao buscar `tsc` no registro npm. Não chega a compilar o aplicativo. Esta revisão não tratou isso como falha do código da etapa.
+
+**Não verificado**
+
+- Não há registro de `tsc` concluído sobre estes arquivos.
+- Não há percurso no aplicativo: cartão com saldo maior que um preço do seed, confirmação só depois do preço visível, saldo do contexto depois do débito, e repetição com saldo menor sem compra concluída.
+- Não há chamada HTTP atribuída a esta tela.
+- A etapa 6, a apresentação do registro, continua fora deste diff.
+
+### Desvios
+
+1. **O cartão da compra é o do contexto.** O plano dizia que o id em `@cardplay/cartaoId` não seria RN02 até a etapa 0. `comprar` usa `cartao.id`, e esse cartão é o carregado por `obterCartaoIdSalvo`. `07-decisoes.md` registra isso na mesma alteração, não numa resposta anterior de P2.4.
+
+2. **P2.2, P3.2, P2.1 e P3.3 foram escritos junto com o código.** O alerta, o botão existente, o `detail` da API e a permanência no catálogo estão na seção “Interface fechada na etapa 5”. O plano deixava esses pontos em aberto.
+
+3. **Há uma frase de sucesso no catálogo.** “Compra registrada. Saldo:” aparece depois da resposta. Não é tela nova. P1.3 continua na lista do que não pede comprovante.
+
+### Riscos
+
+- `comprar` recolhe as movimentações. A aba Histórico lê essa lista e ainda não distingue a compra da recarga. O arquivo da aba não mudou. O sinal do valor gasto continua para a etapa 6.
+- Sem cartão, o botão não compra. Um id salvo que a API não reconheça continua no erro de carga do contexto, não neste botão.
+- `AGENTS.md` e `docs/ui.md` ainda descrevem o botão como desabilitado. A etapa 7 é que alinha esses textos.
+
+### Dúvidas para a decisão humana
+
+- Usar o cartão já carregado no aplicativo fica aceito como a identificação da compra?
+- O alerta com nome e preço, em vez de comprar no primeiro toque, fica aceito?
+- A frase “Compra registrada. Saldo:” no catálogo fica aceita?
+
+### Validações pendentes
+
+- Percorrer no aplicativo um cartão com saldo maior que um preço do seed, confirmar só depois de o produto e o preço estarem visíveis, e ver o saldo do contexto depois do débito.
+- Repetir com saldo menor e ver a mensagem de saldo insuficiente, o saldo intacto e a ausência de compra concluída.
+- `npx tsc --noEmit` registrado não compilou o projeto. Uma compilação concluída ainda não está neste acompanhamento.
+- A etapa 6 continua parada.
+
+### Recomendação
+
+Não avançar para a etapa 6 tratando a etapa 5 como validada.
+
+O código coloca a confirmação depois do nome e do preço, chama `POST /api/cartoes/{id}/compras` só no confirmar, e atualiza o saldo do contexto com a resposta. Cancelar não compra. Não há tela nova nem edição da aba Histórico. Não há percurso registrado nesse fluxo, nem compilação concluída do aplicativo.
+
+Decisão humana sugerida: aceitar o cartão do contexto, o alerta e a frase de saldo no catálogo, ou pedir correção, e guardar o percurso no aplicativo. Sem esse percurso, a etapa não está validada.

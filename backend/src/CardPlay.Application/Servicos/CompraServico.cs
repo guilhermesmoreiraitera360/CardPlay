@@ -17,7 +17,7 @@ public class CompraServico : ICompraServico
         _produtoRepositorio = produtoRepositorio;
     }
 
-    public async Task<CartaoResposta> ComprarAsync(
+    public async Task<CompraResposta> ComprarAsync(
         Guid cartaoId,
         Guid produtoId,
         CancellationToken cancellationToken = default)
@@ -37,6 +37,11 @@ public class CompraServico : ICompraServico
         var movimentacao = cartao.Comprar(produto);
         _cartaoRepositorio.AdicionarMovimentacao(movimentacao);
         await _cartaoRepositorio.SalvarAlteracoesAsync(cancellationToken);
-        return MapeadorCartao.ParaResposta(cartao);
+        return new CompraResposta
+        {
+            CartaoId = cartao.Id,
+            Saldo = cartao.Saldo,
+            Registro = MapeadorCartao.ParaResposta(movimentacao)
+        };
     }
 }

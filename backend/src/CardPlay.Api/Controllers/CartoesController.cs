@@ -9,10 +9,12 @@ namespace CardPlay.Api.Controllers;
 public class CartoesController : ControllerBase
 {
     private readonly ICartaoServico _cartaoServico;
+    private readonly ICompraServico _compraServico;
 
-    public CartoesController(ICartaoServico cartaoServico)
+    public CartoesController(ICartaoServico cartaoServico, ICompraServico compraServico)
     {
         _cartaoServico = cartaoServico;
+        _compraServico = compraServico;
     }
 
     [HttpPost]
@@ -46,6 +48,19 @@ public class CartoesController : ControllerBase
     {
         var cartao = await _cartaoServico.RecarregarAsync(id, requisicao, cancellationToken);
         return Ok(cartao);
+    }
+
+    [HttpPost("{id:guid}/compras")]
+    [ProducesResponseType(typeof(CompraResposta), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CompraResposta>> Comprar(
+        Guid id,
+        [FromBody] CompraRequisicao requisicao,
+        CancellationToken cancellationToken)
+    {
+        var compra = await _compraServico.ComprarAsync(id, requisicao.ProdutoId, cancellationToken);
+        return Ok(compra);
     }
 
     [HttpGet("{id:guid}/movimentacoes")]
