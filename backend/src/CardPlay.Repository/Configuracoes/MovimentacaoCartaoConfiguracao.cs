@@ -24,5 +24,8 @@ public class MovimentacaoCartaoConfiguracao : IEntityTypeConfiguration<Movimenta
 
         builder.Property(movimentacao => movimentacao.DataHora)
             .IsRequired();
+
+        builder.Property(movimentacao => movimentacao.NomeProduto)
+            .HasMaxLength(80);
     }
 }

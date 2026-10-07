@@ -63,6 +63,9 @@ public class CartaoTestes
         Assert.Equal("Recarga da semana", movimentacao.Descricao);
         Assert.Equal(cartao.Id, movimentacao.CartaoId);
         Assert.True(movimentacao.DataHora <= DateTime.UtcNow);
+        Assert.Null(movimentacao.ProdutoId);
+        Assert.Null(movimentacao.NomeProduto);
+        Assert.Null(movimentacao.Quantidade);
     }
 
     [Fact]
@@ -73,5 +76,68 @@ public class CartaoTestes
         cartao.Recarregar(10m, "   ");
 
         Assert.Equal("Recarga", Assert.Single(cartao.Movimentacoes).Descricao);
+    }
+
+    [Fact]
+    public void Comprar_SaldoMaiorQuePreco_DebitaPrecoERegistraCompra()
+    {
+        var cartao = Cartao.Solicitar("Helena");
+        cartao.Recarregar(50m, "Recarga");
+        var produto = ProdutoDeTeste(8.50m);
+        var antes = DateTime.UtcNow;
+
+        var compra = cartao.Comprar(produto);
+
+        Assert.Equal(41.50m, cartao.Saldo);
+        Assert.True(cartao.Saldo >= 0m);
+        Assert.Equal(2, cartao.Movimentacoes.Count);
+        Assert.Equal(produto.Id, compra.ProdutoId);
+        Assert.Equal(produto.Nome, compra.NomeProduto);
+        Assert.Equal(1, compra.Quantidade);
+        Assert.Equal(produto.Preco, compra.Valor);
+        Assert.Equal(cartao.Id, compra.CartaoId);
+        Assert.Equal("Compra", compra.Descricao);
+        Assert.InRange(compra.DataHora, antes, DateTime.UtcNow);
+    }
+
+    [Fact]
+    public void Comprar_SaldoIgualAoPreco_ConcluiComSaldoZero()
+    {
+        var cartao = Cartao.Solicitar("Igor");
+        cartao.Recarregar(4m, "Recarga");
+        var produto = ProdutoDeTeste(4m);
+
+        var compra = cartao.Comprar(produto);
+
+        Assert.Equal(0m, cartao.Saldo);
+        Assert.Equal(produto.Preco, compra.Valor);
+        Assert.Equal(1, compra.Quantidade);
+        Assert.Equal(2, cartao.Movimentacoes.Count);
+    }
+
+    [Fact]
+    public void Comprar_SaldoMenorQuePreco_NaoAlteraSaldoNemRegistraCompra()
+    {
+        var cartao = Cartao.Solicitar("Julia");
+        cartao.Recarregar(10m, "Recarga");
+        var produto = ProdutoDeTeste(18.75m);
+
+        Assert.Throws<SaldoInsuficienteException>(() => cartao.Comprar(produto));
+
+        Assert.Equal(10m, cartao.Saldo);
+        var recarga = Assert.Single(cartao.Movimentacoes);
+        Assert.Null(recarga.ProdutoId);
+        Assert.Null(recarga.Quantidade);
+    }
+
+    private static Produto ProdutoDeTeste(decimal preco)
+    {
+        return new Produto(
+            Guid.NewGuid(),
+            "Café especial",
+            "Um espresso.",
+            preco,
+            "☕",
+            true);
     }
 }

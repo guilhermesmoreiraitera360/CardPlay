@@ -3,6 +3,7 @@ using System;
 using CardPlay.Repository.Contexto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CardPlay.Repository.Migrations
 {
     [DbContext(typeof(CardPlayDbContext))]
-    partial class CardPlayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261007183202_ProdutoEQuantidadeNaMovimentacao")]
+    partial class ProdutoEQuantidadeNaMovimentacao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
