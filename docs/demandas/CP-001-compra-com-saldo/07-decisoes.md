@@ -54,6 +54,17 @@ A recusa de saldo insuficiente é `SaldoInsuficienteException`, distinta de `Rec
 | P2.1 na interface | A tela mostra o `detail` devolvido pela API. Não há outro texto de saldo insuficiente |
 | P3.3 | Depois da compra o cliente permanece no catálogo. O saldo do contexto é atualizado |
 
+## Histórico fechado na etapa 6
+
+A consulta continua a aba Histórico, a mesma lista de P1.1.
+
+| Ponto | Resposta |
+| --- | --- |
+| P2.5 | A compra mostra o nome do produto, a linha “Quantidade” com o número gravado e o valor sem o prefixo “+”. A recarga continua com a descrição e com “+ ” antes do valor. Os dois valores usam `cores.laranja`. Não há sinal de menos |
+| P3.1 | A compra usa o mesmo `formatarDataHora` da recarga: data e hora curtas em `pt-BR`. Não há outro formato |
+
+Aceitos em 2026-10-07 como estão escritos nesta seção. A compra usa o nome do produto como título e não repete a descrição “Compra”.
+
 ## Ainda abertas
 
 Estas respostas não existem. A etapa correspondente segue sem diff até serem registradas.
@@ -65,7 +76,5 @@ Estas respostas não existem. A etapa correspondente segue sem diff até serem r
 | P3.3, para onde o cliente vai depois | fora do plano |
 | P2.3, preço se o cadastro mudar antes da confirmação | fora do plano |
 | P2.4, cartão não selecionado ou id local inválido | fora do plano |
-| P2.5, sinal e rótulo do valor gasto | 6 |
-| P3.1, formato de data e hora da compra | 6 |
 | K4, autenticação, estoque, checkout e banco | plano novo, se a resposta for incluí-los |
 | ACE-08, como provocar a falha de efetivação | 8 |

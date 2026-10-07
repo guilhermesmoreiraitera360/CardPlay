@@ -1,0 +1,7 @@
+[
+  {
+    "status": 200,
+    "url": "http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/compras",
+    "body": "{\"cartaoId\":\"518814c5-f699-4db0-af64-a52965500247\",\"saldo\":0.0,\"registro\":{\"id\":\"8bde17bc-e226-4bdf-ae7b-4dd98ed87c1f\",\"valor\":4.0,\"descricao\":\"Compra\",\"dataHora\":\"2026-10-07T19:59:06.8656348Z\",\"produtoId\":\"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192\",\"nomeProduto\":\"Adesivo CardPlay\",\"quantidade\":1}}"
+  }
+]

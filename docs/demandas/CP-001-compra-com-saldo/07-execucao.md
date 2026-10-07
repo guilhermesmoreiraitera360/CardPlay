@@ -10,6 +10,9 @@ Cada revisão entra como uma seção datada. O arquivo não substitui o plano ne
 | 2026-10-07 | Etapa 3 — orquestração da compra | Não avançar como etapa validada. O caso de uso está no código; falta saída de testes e falta decisão sobre o retorno e as exceções |
 | 2026-10-07 | Etapa 4 — compra por HTTP | Não avançar como etapa validada. Há um corpo de sucesso gravado; faltam as respostas de recusa e a saída da suíte |
 | 2026-10-07 | Etapa 5 — confirmação na interface | Não avançar como etapa validada. O gesto está no código; o fluxo no aplicativo não foi percorrido |
+| 2026-10-07 | Etapa 5 — percurso no aplicativo | O cartão do contexto, o alerta e a frase de saldo ficam aceitos. O percurso e a compilação do aplicativo estão em `percurso-etapa5/`. A etapa 6 continua parada |
+| 2026-10-07 | Etapa 6 — consulta do registro | Não avançar como etapa validada. A consulta com uma recarga e uma compra está em arquivo; P2.5 e P3.1 foram escritos no mesmo diff e ainda pedem aceite |
+| 2026-10-07 | Etapa 6 — aceite de P2.5 e P3.1, e ACE-04 | P2.5 e P3.1 ficam aceitos como escritos. ACE-04 foi percorrido: saldo igual ao preço, compra concluída e saldo zero |
 
 ---
 
@@ -656,3 +659,170 @@ Não avançar para a etapa 6 tratando a etapa 5 como validada.
 O código coloca a confirmação depois do nome e do preço, chama `POST /api/cartoes/{id}/compras` só no confirmar, e atualiza o saldo do contexto com a resposta. Cancelar não compra. Não há tela nova nem edição da aba Histórico. Não há percurso registrado nesse fluxo, nem compilação concluída do aplicativo.
 
 Decisão humana sugerida: aceitar o cartão do contexto, o alerta e a frase de saldo no catálogo, ou pedir correção, e guardar o percurso no aplicativo. Sem esse percurso, a etapa não está validada.
+
+---
+
+## 2026-10-07 — Percurso no aplicativo da etapa 5
+
+Fecha o percurso e a compilação deixados na revisão acima. Não substitui essa revisão. Não abre a etapa 6.
+
+### O que foi aceito
+
+O cartão da compra é o já carregado no contexto. A confirmação mostra o nome e o preço antes de chamar a API. A frase “Compra registrada. Saldo:” permanece no catálogo, junto com “Saldo atual”.
+
+### Correção para o alerta existir na web
+
+`Alert.alert` de `react-native-web` não abre diálogo. Em `mobile/src/componentes/CardProduto.tsx`, na web o toque em “Usar cartão” abre um aviso na própria tela, com o título “Usar cartão”, a frase `Confirmar a compra de {nome} por {preço}?`, e os botões Cancelar e Confirmar. No celular o código continua chamando `Alert.alert` com o mesmo texto. Não há rota nova. `cores.ts` e a barra de abas não mudaram. As cores do aviso são as que já existiam.
+
+### Percurso
+
+Aplicativo web em `http://127.0.0.1:8081`, API em `http://127.0.0.1:5080`. Capturas, log e corpos HTTP em `docs/demandas/CP-001-compra-com-saldo/percurso-etapa5/`.
+
+Cartão criado na primeira aba, titular “Percurso Etapa 5”, número **CP-QBDG8R**, id `76066d9e-9442-462b-87da-eceb478d3be7`. Recarga de R$ 10,00.
+
+| Passo | O que a tela mostrou | HTTP |
+| --- | --- | --- |
+| Catálogo antes de confirmar | “Saldo atual: R$ 10,00”. Café especial com preço R$ 8,50 acima de “Usar cartão” (`04-catalogo-saldo-10.png`) | `GET /api/produtos` 200 |
+| Toque em “Usar cartão” do café | Aviso “Confirmar a compra de Café especial por R$ 8,50?” (`05-alerta-cafe.png`) | Nenhuma chamada a `/compras` |
+| Cancelar | O aviso fecha. O saldo continua R$ 10,00 (`06-cancelou.png`) | Nenhuma chamada a `/compras` |
+| Confirmar o café | “Compra registrada. Saldo: R$ 1,50” e “Saldo atual: R$ 1,50” (`07-compra-cafe.png`). A aba Cartão mostra “Saldo disponível R$ 1,50” (`08-cartao-apos-compra.png`) | `POST /api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras` 200. Corpo em `compras.json`: saldo 1,5, produto “Café especial”, valor 8,5, quantidade 1 |
+| Adesivo de R$ 4,00 com saldo R$ 1,50 | Aviso “Confirmar a compra de Adesivo CardPlay por R$ 4,00?” (`09-alerta-adesivo.png`). Depois do confirmar, “Saldo insuficiente para concluir a compra.” e “Saldo atual: R$ 1,50” (`10-saldo-insuficiente.png`) | `POST` no mesmo cartão, 400, `detail` “Saldo insuficiente para concluir a compra.” |
+| Histórico | Uma “Compra” de R$ 8,50 e uma “Recarga” de R$ 10,00. Não há segunda compra (`11-historico.png`) | A recusa não acrescentou registro |
+
+R$ 10,00 menos R$ 8,50 é R$ 1,50, o saldo que o catálogo e a aba Cartão mostraram depois do confirmar.
+
+### Compilação
+
+`node node_modules/typescript/bin/tsc --noEmit` em `mobile/`, código de saída 0. A saída está em `percurso-etapa5/tsc.txt`. O `npx tsc --noEmit` da revisão anterior continua sendo a tentativa que falhou com `FETCH_ERROR` antes de compilar.
+
+### O que este percurso não fecha
+
+- ACE-04, saldo exatamente igual ao preço, não foi percorrido.
+- A aba Histórico mostra a compra com o sinal de recarga (“+ R$ 8,50”). O arquivo da aba não mudou. Isso continua na etapa 6.
+- `AGENTS.md` e `docs/ui.md` ainda descrevem o botão como desabilitado. Isso continua na etapa 7.
+
+---
+
+## 2026-10-07 — Etapa 6
+
+### Etapa revisada
+
+Etapa 6 de `06-plan.md`: na consulta decidida na etapa 0, mostrar o registro da compra com produto, quantidade, valor, data e hora, e manter as recargas com o sinal e o texto que já tinham. Parar antes da documentação de produto.
+
+O parecer continua neste arquivo. Não há Markdown de execução por etapa.
+
+O diff desta revisão é `mobile/src/telas/TelaMovimentacoes.tsx`, a seção “Histórico fechado na etapa 6” de `07-decisoes.md` e a pasta `docs/demandas/CP-001-compra-com-saldo/percurso-etapa6/`. `formatacao.ts`, `tipos/index.ts` e `MovimentacaoResposta` não entram nesse diff.
+
+### Arquivos e propósito
+
+| Arquivo | Papel no diff |
+| --- | --- |
+| `mobile/src/telas/TelaMovimentacoes.tsx` | A mesma lista passa a desenhar a compra pelo nome do produto, quantidade e valor sem “+”. A recarga continua com a descrição e com “+ ” |
+| `docs/demandas/CP-001-compra-com-saldo/07-decisoes.md` | P2.5 e P3.1 saem de “Ainda abertas” e ganham a seção “Histórico fechado na etapa 6” |
+| `percurso-etapa6/historico.png` | Captura da aba Histórico |
+| `percurso-etapa6/texto.txt` | Texto do documento no momento da captura |
+| `percurso-etapa6/tsc.txt` | Saída de `node node_modules/typescript/bin/tsc --noEmit` |
+
+### O que o código faz
+
+Leitura do diff, sem execução nesta revisão.
+
+`ehCompra` é verdadeiro quando `nomeProduto` não é nulo e tem tamanho maior que zero. Nesse caso o título da linha é o nome do produto, surge a linha “Quantidade” com `quantidade`, e o valor é `formatarMoeda` sem prefixo. Caso contrário a linha continua com `descricao` e `+ ` antes do valor. A data, nos dois casos, continua `formatarDataHora`. A cor do valor continua `cores.laranja`. Não há sinal de menos.
+
+Os três textos que falavam só de recarga mudam: sem cartão, “o histórico aparecerá aqui”; com cartão, “Histórico deste cartão.”; lista vazia, “Nenhuma movimentação ainda.”
+
+### Aderência ao plano
+
+P1.1 já era a mesma lista. O plano pedia essa consulta com produto, quantidade, valor, data e hora, e pedia que a recarga anterior conservasse o sinal e o texto. Não pedia segunda lista, mudança de `formatarDataHora` nem documentação de produto. Dizia que P2.5 e P3.1 não tinham critério de exibição até serem respondidos, e que mostrar a compra com “+ ” não estava aprovado.
+
+| Pedido da etapa 6 | Leitura do diff e dos arquivos |
+| --- | --- |
+| Mesma lista, sem componente novo | Só `TelaMovimentacoes.tsx` muda no aplicativo |
+| Compra com produto, quantidade, valor, data e hora | A linha usa `nomeProduto`, `quantidade`, `valor` e `formatarDataHora` |
+| Recarga com o sinal e o texto anteriores | Sem `nomeProduto`, a descrição e o prefixo “+ ” permanecem |
+| Valor gasto sem aparecer como crédito | A compra não recebe “+ ” |
+| Evidência com uma recarga e uma compra | `historico.png` mostra as duas linhas. O fluxo que criou a compra está em `percurso-etapa5/` |
+| P2.5 e P3.1 respondidos antes do critério de exibição | As respostas estão no mesmo diff da tela, na seção nova de `07-decisoes.md` |
+
+### Critérios
+
+| Critério | Nesta etapa | Situação |
+| --- | --- | --- |
+| ACE-01, um único registro com produto, quantidade, valor, data e hora | `historico.png` tem uma linha “Café especial”, “Quantidade 1”, “R$ 8,50” e “07/10/2026, 19:45”. `percurso-etapa5/compras.json` tem um corpo 200 com esse produto, quantidade 1 e valor 8,5, em `2026-10-07T19:45:39.7661731Z`. A recusa do adesivo, no log da etapa 5, não deveria gerar segunda compra | A captura mostra um registro de compra e uma recarga. O id da movimentação não aparece na tela |
+| ACE-03, o registro correspondente existe na consulta | A mesma captura não é um histórico só de recargas | Confirmado na captura. O débito em si não é desta etapa |
+| ACE-04 | Saldo exatamente igual ao preço | Continua não percorrido |
+
+### Evidências
+
+**Confirmado por artefato**
+
+- `git diff` de `TelaMovimentacoes.tsx`: a compra deixa de usar a descrição e o prefixo “+ ”; a recarga conserva os dois; a quantidade só entra na compra.
+- `historico.png`: aba Histórico, subtítulo “Histórico deste cartão.”, primeira linha “Café especial” / “R$ 8,50” / “Quantidade 1” / “07/10/2026, 19:45”, segunda linha “Recarga” / “+ R$ 10,00” / “07/10/2026, 19:45”.
+- `texto.txt`, na mesma pasta, inclui “CP-QBDG8R” e as mesmas duas linhas. O número do cartão também está em `percurso-etapa5/log.txt`, no percurso que gravou o café.
+- `percurso-etapa6/tsc.txt`: `node node_modules/typescript/bin/tsc --noEmit` em `mobile/`, código de saída 0. Isso registra compilação do aplicativo. Não é a consulta.
+
+**Falha**
+
+- Nenhuma falha de compilação ou de tela está nesses três arquivos. Esta revisão não rodou build nem testes.
+
+**Não verificado**
+
+- `texto.txt` também contém o texto da aba Cartão. A captura visível é `historico.png`, não esse texto inteiro.
+- Os textos de lista vazia e de cartão ausente mudam no diff e não aparecem na captura.
+- A hora “19:45” coincide com os dígitos do instante em `compras.json`. Não há fuso da captura. Esta revisão não conclui se a hora exibida é a local do cliente.
+- A etapa 7, os documentos de produto, continua fora deste diff.
+
+### Desvios
+
+1. **P2.5 e P3.1 foram escritos junto com a tela.** O plano dizia que não havia critério de exibição até essas respostas. `07-decisoes.md` as registrava em “Ainda abertas” e dizia que a etapa seguia sem diff até o registro. O diff tira as duas da lista e define, na mesma alteração, nome do produto, “Quantidade” com o número gravado, valor sem “+”, recarga com “+ ”, cor `laranja` e o `formatarDataHora` já usado na recarga.
+
+2. **A compra deixa de mostrar a descrição “Compra”.** O título passa a ser `nomeProduto`. A descrição gravada continua “Compra”; a tela da compra não a escreve.
+
+### Riscos
+
+- Uma movimentação com `nomeProduto` vazio continua no ramo da recarga e recebe “+ ”. O domínio da compra preenche o nome; a tela não tem outro critério.
+- A hora curta dos dois registros cai no mesmo minuto. A captura não separa segundos. Os instantes do log da etapa 5 também caem nesse minuto.
+- `AGENTS.md` e `docs/ui.md` ainda descrevem o histórico como recarga e o botão como desabilitado. A etapa 7 é que alinha esses textos.
+
+### Dúvidas para a decisão humana
+
+- P2.5, como está na seção “Histórico fechado na etapa 6”, fica aceito?
+- P3.1, reutilizar `formatarDataHora` da recarga, fica aceito?
+- Omitir a descrição “Compra” e usar o nome do produto como título fica aceito?
+
+### Validações pendentes
+
+- Aceite humano de P2.5 e P3.1. Sem esse aceite, o critério de exibição que o plano deixou em aberto continua sendo o texto escrito no mesmo diff da tela.
+- ACE-04 continua não percorrido.
+- A etapa 7 continua parada.
+
+### Recomendação
+
+Não avançar para a etapa 7 tratando a etapa 6 como validada.
+
+A consulta pedida está em arquivo: no mesmo cartão do percurso da etapa 5, a aba Histórico mostra uma compra com produto, quantidade 1, R$ 8,50 e data e hora, e a recarga anterior com “+ R$ 10,00”. A compilação registrada em `percurso-etapa6/tsc.txt` terminou com código 0. P2.5 e P3.1 não vieram de uma resposta anterior; foram definidos nesta alteração.
+
+Decisão humana sugerida: aceitar esse desenho do histórico, ou pedir correção do sinal, do rótulo, da descrição omitida ou do formato da data. Sem isso, a etapa não está validada.
+
+---
+
+## 2026-10-07 — Aceite de P2.5 e P3.1, e ACE-04
+
+Fecha as duas pendências da revisão da etapa 6. Não substitui essa revisão. Não abre a etapa 7.
+
+### Aceite
+
+P2.5 e P3.1 ficam aceitos como estão na seção “Histórico fechado na etapa 6” de `07-decisoes.md`. A compra mostra o nome do produto, a quantidade gravada e o valor sem “+”. A recarga conserva a descrição e o “+ ”. A data e a hora da compra usam o mesmo `formatarDataHora` da recarga. O título da compra é o nome do produto; a descrição “Compra” não é repetida na tela.
+
+### ACE-04
+
+Cartão **CP-NYL59G**, id `518814c5-f699-4db0-af64-a52965500247`, titular “ACE-04”. Recarga de R$ 4,00, igual ao preço do adesivo do seed. Capturas e corpo HTTP em `docs/demandas/CP-001-compra-com-saldo/percurso-ace04/`.
+
+| Passo | O que a tela mostrou |
+| --- | --- |
+| Catálogo antes de confirmar | “Saldo atual: R$ 4,00” e Adesivo CardPlay a R$ 4,00 (`03-catalogo-saldo-igual.png`) |
+| Confirmação | “Confirmar a compra de Adesivo CardPlay por R$ 4,00?” (`04-alerta-adesivo.png`) |
+| Depois de confirmar | “Compra registrada. Saldo: R$ 0,00” e “Saldo atual: R$ 0,00” (`05-saldo-zero.png`). A aba Cartão mostra “Saldo disponível R$ 0,00” (`06-cartao-zero.png`) |
+| Histórico | “Adesivo CardPlay”, “R$ 4,00”, “Quantidade 1” e a recarga “+ R$ 4,00” (`07-historico.png`) |
+
+`compras.json` guarda o `POST /compras` 200: saldo 0,0, produto “Adesivo CardPlay”, valor 4,0, quantidade 1. Não houve segunda compra.

@@ -3,6 +3,11 @@ import { useCartao } from '../estado/CartaoContexto';
 import { cores } from '../tema/cores';
 import { usePaddingTela } from '../tema/usePaddingTela';
 import { formatarDataHora, formatarMoeda } from '../util/formatacao';
+import type { Movimentacao } from '../tipos';
+
+function ehCompra(movimentacao: Movimentacao): boolean {
+  return movimentacao.nomeProduto != null && movimentacao.nomeProduto.length > 0;
+}
 
 export function TelaMovimentacoes() {
   const { cartao, movimentacoes } = useCartao();
@@ -12,7 +17,7 @@ export function TelaMovimentacoes() {
     return (
       <View style={[estilos.conteudo, paddingTela]}>
         <Text style={estilos.titulo}>Movimentações</Text>
-        <Text style={estilos.subtitulo}>Quando houver um cartão, as recargas aparecerão aqui.</Text>
+        <Text style={estilos.subtitulo}>Quando houver um cartão, o histórico aparecerá aqui.</Text>
       </View>
     );
   }
@@ -20,22 +25,34 @@ export function TelaMovimentacoes() {
   return (
     <ScrollView contentContainerStyle={[estilos.conteudo, paddingTela]}>
       <Text style={estilos.titulo}>Movimentações</Text>
-      <Text style={estilos.subtitulo}>Histórico simples das recargas deste cartão.</Text>
+      <Text style={estilos.subtitulo}>Histórico deste cartão.</Text>
 
       {movimentacoes.length === 0 ? (
         <View style={estilos.vazio}>
-          <Text style={estilos.vazioTexto}>Nenhuma recarga ainda.</Text>
+          <Text style={estilos.vazioTexto}>Nenhuma movimentação ainda.</Text>
         </View>
       ) : (
-        movimentacoes.map((movimentacao) => (
-          <View key={movimentacao.id} style={estilos.item}>
-            <View style={estilos.itemTopo}>
-              <Text style={estilos.descricao}>{movimentacao.descricao}</Text>
-              <Text style={estilos.valor}>+ {formatarMoeda(movimentacao.valor)}</Text>
+        movimentacoes.map((movimentacao) => {
+          const compra = ehCompra(movimentacao);
+          return (
+            <View key={movimentacao.id} style={estilos.item}>
+              <View style={estilos.itemTopo}>
+                <Text style={estilos.descricao}>
+                  {compra ? movimentacao.nomeProduto : movimentacao.descricao}
+                </Text>
+                <Text style={estilos.valor}>
+                  {compra
+                    ? formatarMoeda(movimentacao.valor)
+                    : `+ ${formatarMoeda(movimentacao.valor)}`}
+                </Text>
+              </View>
+              {compra ? (
+                <Text style={estilos.quantidade}>Quantidade {movimentacao.quantidade}</Text>
+              ) : null}
+              <Text style={estilos.data}>{formatarDataHora(movimentacao.dataHora)}</Text>
             </View>
-            <Text style={estilos.data}>{formatarDataHora(movimentacao.dataHora)}</Text>
-          </View>
-        ))
+          );
+        })
       )}
     </ScrollView>
   );
@@ -90,6 +107,11 @@ const estilos = StyleSheet.create({
   valor: {
     color: cores.laranja,
     fontWeight: '700',
+  },
+  quantidade: {
+    marginTop: 8,
+    color: cores.tintaSuave,
+    fontSize: 13,
   },
   data: {
     marginTop: 8,
