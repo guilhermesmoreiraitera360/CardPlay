@@ -6,6 +6,7 @@ Cada revisão entra como uma seção datada. O arquivo não substitui o plano ne
 | ---------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | 2026-10-07 | Etapa 1 — débito e registro no domínio | Não avançar como etapa validada. Decidir os desvios de modelo antes da etapa 2                                              |
 | 2026-10-07 | Etapa 2 — modelo do registro no SQLite | Não avançar como etapa validada. Investigar a compilação que o plano exige. O diff de persistência não pede correção por si |
+| 2026-10-07 | Etapa 2 — resolução do diff de persistência | Os dois pontos de modelo ficam como estão. A solution compilou. A etapa 3 continua parada até inspeção desta resolução |
 
 ---
 
@@ -248,3 +249,49 @@ O diff de persistência faz o que a etapa pedia no arquivo: três colunas anulá
 Falta a evidência que o próprio plano nomeia para mudança de esquema: a solution compilando. O log de API existente mostra o esquema antigo e a frase de que nenhuma migration foi aplicada. Sem essa compilação registrada, a etapa não está validada.
 
 Decisão humana sugerida: aceitar o snapshot sem SQL de `Id` e a falta de chave estrangeira, ou pedir correção desses dois pontos; em seguida guardar a saída do build. Só com isso a etapa 2 deixa de estar pendente de evidência.
+
+---
+
+## 2026-10-07 — Resolução do diff de persistência da etapa 2
+
+Fecha os dois pontos deixados na revisão acima. Não substitui essa revisão. Não abre a etapa 3.
+
+### O que foi decidido
+
+Os dois pontos ficam como o diff já estava. O registro está em `07-decisoes.md`, seção “Persistência fechada na etapa 2”.
+
+`ValueGeneratedOnAdd` continua fora do snapshot novo para `Cartao.Id` e `MovimentacaoCartao.Id`. A configuração desses dois `Id` já era `ValueGeneratedNever()` no commit inicial, e o designer de `Inicial` não acompanhava isso. O snapshot da migration `ProdutoEQuantidadeNaMovimentacao` passa a acompanhar. O `Up` não altera a coluna `Id` porque o tipo no SQLite continua `TEXT`. `Produto.Id` segue `ValueGeneratedOnAdd`, como a configuração de produto, que não chama `ValueGeneratedNever()`.
+
+`ProdutoId` continua sem chave estrangeira e sem `HasOne` para `Produto`. A linha guarda o id e o nome. `MovimentacaoCartaoConfiguracao` agora declara `ProdutoId`, `NomeProduto` e `Quantidade` como opcionais, com `NomeProduto` limitado a 80. Isso não muda o modelo em relação à migration já gerada.
+
+### Evidência de modelo e de compilação
+
+Comando:
+
+```text
+dotnet ef migrations has-pending-model-changes --project backend/src/CardPlay.Repository --startup-project backend/src/CardPlay.Api
+```
+
+Saída desta execução: build da comparação concluiu; em seguida, “No changes have been made to the model since the last migration.” Código de saída 0.
+
+Comando:
+
+```text
+dotnet build backend/CardPlay.sln
+```
+
+Saída desta execução: `Build succeeded.` 0 avisos, 0 erros. Projetos compilados: Domain, Application, Services, Repository, Api, Tests. Tempo 00:00:01.94.
+
+Comando, sobre esse build:
+
+```text
+dotnet test backend/CardPlay.sln --no-build
+```
+
+Saída desta execução: `Passed! - Failed: 0, Passed: 16, Skipped: 0, Total: 16`. A suíte não abre SQLite e não grava as colunas novas.
+
+O log antigo da API em `localhost:5080` não foi reutilizado. `cardplay.db` não foi aberto.
+
+### O que continua pendente
+
+ACE-03 depois de gravar segue sem `SaveChanges` observado com as colunas novas. A etapa 3 continua fora deste diff.

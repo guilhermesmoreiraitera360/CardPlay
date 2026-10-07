@@ -27,6 +27,13 @@ A recusa de saldo insuficiente é `SaldoInsuficienteException`, distinta de `Rec
 
 `Produto.Disponivel` não entra na regra.
 
+## Persistência fechada na etapa 2
+
+| Ponto | Resposta |
+| --- | --- |
+| `ValueGeneratedOnAdd` some do snapshot dos `Id` de cartão e de movimentação, sem SQL no `Up` | Permanece assim. `CartaoConfiguracao` e `MovimentacaoCartaoConfiguracao` já pedem `ValueGeneratedNever()` desde o commit inicial. O designer da migration `Inicial` ainda diz `ValueGeneratedOnAdd` porque esse modelo foi gravado sem acompanhar essa configuração. O snapshot novo acompanha a configuração. A coluna `Id` não muda no SQLite, então o `Up` não tem SQL de `Id`. `dotnet ef migrations has-pending-model-changes` respondeu que não há mudança de modelo depois da migration `ProdutoEQuantidadeNaMovimentacao` |
+| `ProdutoId` sem chave estrangeira para `Produtos` | Permanece sem chave. O registro guarda o id e a cópia do nome na própria linha. Apagar ou alterar o produto no catálogo não redefine essa linha. Não há `HasOne` para `Produto` |
+
 ## Ainda abertas
 
 Estas respostas não existem. A etapa correspondente segue sem diff até serem registradas.
