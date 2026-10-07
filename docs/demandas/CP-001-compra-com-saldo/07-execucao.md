@@ -7,6 +7,7 @@ Cada revisão entra como uma seção datada. O arquivo não substitui o plano ne
 | 2026-10-07 | Etapa 1 — débito e registro no domínio | Não avançar como etapa validada. Decidir os desvios de modelo antes da etapa 2                                              |
 | 2026-10-07 | Etapa 2 — modelo do registro no SQLite | Não avançar como etapa validada. Investigar a compilação que o plano exige. O diff de persistência não pede correção por si |
 | 2026-10-07 | Etapa 2 — resolução do diff de persistência | Os dois pontos de modelo ficam como estão. A solution compilou. A etapa 3 continua parada até inspeção desta resolução |
+| 2026-10-07 | Etapa 3 — orquestração da compra | Não avançar como etapa validada. O caso de uso está no código; falta saída de testes e falta decisão sobre o retorno e as exceções |
 
 ---
 
@@ -295,3 +296,125 @@ O log antigo da API em `localhost:5080` não foi reutilizado. `cardplay.db` não
 ### O que continua pendente
 
 ACE-03 depois de gravar segue sem `SaveChanges` observado com as colunas novas. A etapa 3 continua fora deste diff.
+
+---
+
+## 2026-10-07 — Etapa 3
+
+### Etapa revisada
+
+Etapa 3 de `06-plan.md`: buscar cartão e produto, aplicar a regra da etapa 1 e persistir saldo e registro no mesmo `SaveChanges`, ou não persistir nenhum dos dois. Parar antes do controller.
+
+O parecer continua neste arquivo. Não há Markdown de execução por etapa.
+
+### Arquivos e propósito
+
+Estado lido no Git desta revisão: quatro arquivos modificados e quatro não rastreados. Nenhum controller, DTO de entrada, cliente ou tela aparece nesse conjunto.
+
+| Arquivo | Papel no diff |
+| --- | --- |
+| `backend/src/CardPlay.Application/Contratos/Servicos/ICompraServico.cs` | Arquivo novo. `ComprarAsync(cartaoId, produtoId)` devolve `CartaoResposta` |
+| `backend/src/CardPlay.Application/Servicos/CompraServico.cs` | Arquivo novo. Lê cartão e produto, chama `Cartao.Comprar`, adiciona a movimentação e chama `SalvarAlteracoesAsync` uma vez |
+| `backend/src/CardPlay.Application/Contratos/Repositorios/IProdutoRepositorio.cs` | Declara `ObterPorIdAsync` |
+| `backend/src/CardPlay.Repository/Repositorios/ProdutoRepositorio.cs` | Implementa a leitura por id, com `AsNoTracking`, sem filtrar `Disponivel` |
+| `backend/src/CardPlay.Domain/Excecoes/ProdutoNaoEncontradoException.cs` | Arquivo novo. Mensagem “Produto {id} não foi encontrado.” |
+| `backend/src/CardPlay.Api/Program.cs` | Uma linha: registra `ICompraServico` em `CompraServico`. Não há action HTTP |
+| `backend/tests/CardPlay.Tests/CompraServicoTestes.cs` | Arquivo novo. Cinco testes com repositórios em memória |
+| `docs/demandas/CP-001-compra-com-saldo/07-decisoes.md` | A linha que bloqueava o lugar do caso de uso passa a dizer que ele fica em `CompraServico`. O contrato HTTP continua na etapa 4 |
+
+### O que o código faz
+
+Leitura dos arquivos, sem execução.
+
+`ComprarAsync` busca o cartão. Se não existe, lança `CartaoNaoEncontradoException` antes de ler o produto e antes de gravar. Se o cartão existe e o produto não, lança `ProdutoNaoEncontradoException` antes de `Comprar` e antes de gravar. No outro caminho, `cartao.Comprar(produto)` debita pelo preço carregado do repositório; em seguida o serviço chama `AdicionarMovimentacao` e um único `SalvarAlteracoesAsync`. O retorno é `MapeadorCartao.ParaResposta`, que copia id, titular, código, saldo e data de criação do cartão.
+
+`Comprar` pode lançar `SaldoInsuficienteException` antes de alterar o cartão. Nesse caminho o serviço não chega em `AdicionarMovimentacao` nem em `SalvarAlteracoesAsync`.
+
+`Produto.Disponivel` não é consultado. Não há gravação de tentativa quando a compra é recusada.
+
+O duplo de cartão em `CompraServicoTestes` incrementa `VezesSalvo` e deixa `AdicionarMovimentacao` vazio. O duplo de produto guarda a instância recebida. O teste de saldo maior espera saldo 41,50 a partir de recarga 50 e preço 8,50, uma gravação, e uma movimentação com id do produto, nome, quantidade 1 e valor igual ao preço. O de saldo igual espera saldo zero, uma gravação e uma movimentação com o id do produto. O de saldo menor espera a exceção de saldo, saldo 10 e zero gravações. Cartão ausente e produto ausente esperam a exceção correspondente e zero gravações; no produto ausente, o saldo permanece 50.
+
+### Aderência ao plano
+
+O plano pedia orquestração que receba cartão e produto, uma leitura de produto por id, um `SaveChanges` só no caminho de conclusão, testes de serviço em memória no estilo de `CartaoServicoTestes`, e parada antes do controller. O lugar do tipo estava em aberto. O nome não estava escolhido.
+
+| Pedido da etapa 3 | Leitura do diff |
+| --- | --- |
+| Buscar cartão e produto e aplicar a regra da etapa 1 | `CompraServico` chama `ObterPorIdAsync` nos dois repositórios e depois `cartao.Comprar` |
+| Um `SaveChanges`, ou nenhum | Uma chamada a `SalvarAlteracoesAsync` depois de `Comprar`. As três recusas lançam antes dela |
+| Leitura de produto por identificador | `IProdutoRepositorio.ObterPorIdAsync` e a implementação no repositório concreto |
+| Testes: compra concluída, saldo igual, saldo menor, cartão ausente, produto ausente | Os cinco `[Fact]` estão em `CompraServicoTestes` |
+| Suíte de recarga preservada no código | `CartaoServico` e `CartaoServicoTestes` não entram neste diff |
+| Parar antes do controller | `Program.cs` só registra o serviço. Não há action nova |
+| Sem rastro de tentativa | Nenhum `SaveChanges` nos caminhos de exceção |
+| `Produto.Disponivel` fora da regra | A leitura não filtra esse campo e o serviço não o lê |
+
+### Critérios
+
+“Confirmado” abaixo é leitura de código e de teste escrito, não de execução.
+
+| Critério | Nesta etapa | Situação |
+| --- | --- | --- |
+| ACE-01, forma geral | O teste de saldo maior usa recarga de 50 e um `Produto` de 8,50 criado no teste, e espera saldo 41,50 e um registro com produto, quantidade 1 e valor 8,50. Não afirma data e hora. O produto não é lido do seed | Código e teste alinhados à forma geral do saldo e do registro, sem a data. Execução não verificada |
+| ACE-01, par R$ 50 / R$ 20 / R$ 30 | Fora da meta já na etapa 1. Esta etapa também não usa esse par | Fora desta etapa |
+| ACE-02 | Ordem “ver e depois confirmar” é a etapa 5 | Fora desta etapa |
+| ACE-03 | No caminho que retorna, débito e `AdicionarMovimentacao` acontecem antes do único `SalvarAlteracoesAsync`. O valor da movimentação no teste de saldo maior é o preço. O teste de saldo igual não afirma nome, quantidade, valor nem data | Código alinhado no caminho de sucesso. O teste de saldo igual não observa o conteúdo completo do registro. Execução não verificada. Gravação em SQLite não está neste teste |
+| ACE-04 | O teste espera saldo zero, uma gravação e uma movimentação com o id do produto | Saldo zero está no teste. O restante do registro, nesse teste, não está afirmado. Execução não verificada |
+| ACE-05 | O teste de saldo maior afirma `Saldo >= 0`. O de saldo igual espera zero. O de saldo menor espera 10 | Código alinhado nos três testes escritos. Execução não verificada |
+| ACE-06, sem a redação | Saldo menor lança `SaldoInsuficienteException`, não grava e mantém o saldo. O teste não afirma o texto | Parte de domínio e de “não gravar” alinhada ao teste escrito. Execução não verificada |
+| ACE-07, cenários A e B | Cartão ausente lança `CartaoNaoEncontradoException` e não grava. Produto ausente lança `ProdutoNaoEncontradoException`, mantém saldo 50 e não grava | Os dois cenários estão em testes separados, com exceções e frases diferentes. ACE-07 pede uma informação de dado inválido para os dois. Execução não verificada |
+| ACE-08 | Sem falha provocada de `SaveChanges`. O plano deixa esta evidência de fora | Fora desta etapa |
+
+### Evidências
+
+**Confirmado por artefato**
+
+- `git status` e `git diff` desta revisão mostram os oito arquivos da tabela. Não há controller novo.
+- `CompraServico` chama `SalvarAlteracoesAsync` uma vez, depois de `Comprar` e de `AdicionarMovimentacao`.
+- `TratadorExcecoes` não cita `SaldoInsuficienteException` nem `ProdutoNaoEncontradoException`. O ramo genérico continua HTTP 500. Nenhum controller chama `ICompraServico`.
+- `MovimentacaoResposta` continua com id, valor, descrição e data/hora. Não tem produto nem quantidade.
+- A seção anterior deste arquivo registra `dotnet test` com 16 testes, anterior a `CompraServicoTestes`.
+
+**Falha**
+
+- Nenhuma falha de execução foi observada. Esta revisão não rodou build nem testes.
+
+**Não verificado**
+
+- Não há, no repositório nem nos terminais lidos, saída de `dotnet test` ou de `dotnet build` posterior a estes arquivos. A existência dos cinco testes não é resultado de teste.
+- O contador `VezesSalvo` é o sinal de gravação do duplo. `AdicionarMovimentacao` nesse duplo está vazio, então o teste não observa se o repositório recebeu a movimentação. O plano já registra que o duplo em memória não grava de verdade.
+- ACE-03 depois de gravar no SQLite continua sem chamada. O plano não pede teste de banco nesta etapa.
+
+### Desvios
+
+1. **O tipo e o nome foram escolhidos neste diff.** O plano deixava em aberto método num serviço existente ou tipo novo, e dizia que o nome não estava escolhido. O código cria `CompraServico`. `07-decisoes.md` passa a afirmar esse lugar no mesmo conjunto de arquivos, não numa decisão anterior à implementação.
+
+2. **ACE-07 fica com duas exceções e duas frases.** Cartão ausente reutiliza “Cartão {id} não foi encontrado.” Produto ausente ganha “Produto {id} não foi encontrado.” O critério pede a mesma informação de dado inválido nos dois cenários. P2.1, ainda listado como aberto em `07-decisoes.md`, guarda texto e canal.
+
+3. **O caso de uso devolve só o cartão.** `CartaoResposta` não carrega produto, quantidade, valor da compra nem data da compra. O registro é afirmado no teste pela entidade em memória, não pelo retorno. O plano diz que a etapa 4 encaminha o que este caso de uso devolver, e que a resposta de sucesso inclui saldo e registro.
+
+### Riscos
+
+- Encaminhar `ComprarAsync` para HTTP sem mudar o retorno entrega o saldo novo e não entrega o registro da compra.
+- `SaldoInsuficienteException` e `ProdutoNaoEncontradoException` caem no ramo 500 de `TratadorExcecoes` se um controller as deixar subir. P2.1 ainda não escolhe 400, 404 ou outro status.
+- O teste de compra concluída continua passando se `AdicionarMovimentacao` deixar de ser chamado, porque o duplo ignora o argumento e a movimentação já está na lista do cartão desde `Comprar`.
+- `ObterPorIdAsync` não filtra `Disponivel`. Isso segue o plano. Um produto com `Disponivel` falso seria comprado se a etapa 4 o encaminhasse.
+
+### Dúvidas para a decisão humana
+
+- `CompraServico` como tipo novo fica aceito, ou a orquestração deve ir para um método de `CartaoServico`?
+- O retorno da etapa 3 permanece `CartaoResposta`, ou passa a incluir o registro antes do HTTP?
+- As duas frases de cartão ausente e produto ausente permanecem distintas até P2.1?
+
+### Validações pendentes
+
+- Rodar `dotnet test backend/CardPlay.sln` e guardar a saída, com os cinco testes de `CompraServicoTestes` e a suíte de recarga. Esta revisão não fez isso.
+- ACE-02, o contrato HTTP, o texto ao cliente e ACE-08 continuam nas etapas em que o plano os colocou.
+
+### Recomendação
+
+Não avançar para a etapa 4 tratando a etapa 3 como validada.
+
+O fluxo pedido está no código: uma leitura dos dois ids, a regra da etapa 1, uma gravação no sucesso e nenhuma gravação nas três recusas, sem controller. Falta saída verificável dos testes. Ficam também três escolhas que a etapa 4 herdaria: o tipo `CompraServico`, o retorno só com o cartão e as duas mensagens de ausência.
+
+Decisão humana sugerida: aceitar esses três pontos ou pedir correção antes do HTTP, e guardar a saída da suíte. Sem essa saída, a etapa não está validada.

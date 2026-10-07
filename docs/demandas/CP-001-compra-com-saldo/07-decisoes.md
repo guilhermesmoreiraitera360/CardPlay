@@ -40,7 +40,7 @@ Estas respostas não existem. A etapa correspondente segue sem diff até serem r
 
 | Bloqueio | Etapas que continuam paradas |
 | --- | --- |
-| Onde o caso de uso vive e qual contrato HTTP usa | 3 e 4 |
+| Contrato HTTP da compra | 4. O caso de uso da etapa 3 fica em `CompraServico`, na Application, porque a recarga não lê produto e a listagem de produtos não lê cartão |
 | P2.1 e o uso dos status 400 e 404 | 3, 4 e 5 |
 | P1.4, rastro de tentativa que não seja compra concluída | 3 e 8 |
 | P2.2, resumo dedicado ou gesto depois do preço | 5 |
