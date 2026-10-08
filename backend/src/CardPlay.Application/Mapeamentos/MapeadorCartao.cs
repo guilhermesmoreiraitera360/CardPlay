@@ -24,7 +24,10 @@ public static class MapeadorCartao
             Id = movimentacao.Id,
             Valor = movimentacao.Valor,
             Descricao = movimentacao.Descricao,
-            DataHora = movimentacao.DataHora
+            DataHora = movimentacao.DataHora,
+            ProdutoId = movimentacao.ProdutoId,
+            NomeProduto = movimentacao.NomeProduto,
+            Quantidade = movimentacao.Quantidade
         };
     }
 }

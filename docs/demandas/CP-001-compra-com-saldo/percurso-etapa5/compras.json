@@ -1,0 +1,17 @@
+[
+  {
+    "status": 204,
+    "url": "http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras",
+    "body": "Error: No resource with given identifier found"
+  },
+  {
+    "status": 200,
+    "url": "http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras",
+    "body": "{\"cartaoId\":\"76066d9e-9442-462b-87da-eceb478d3be7\",\"saldo\":1.5,\"registro\":{\"id\":\"e16a7335-49ad-4cc2-ac3d-9593febc2b20\",\"valor\":8.5,\"descricao\":\"Compra\",\"dataHora\":\"2026-10-07T19:45:39.7661731Z\",\"produtoId\":\"6f1c2a7e-0c4a-4b1d-9e2f-1a2b3c4d5e6f\",\"nomeProduto\":\"Café especial\",\"quantidade\":1}}"
+  },
+  {
+    "status": 400,
+    "url": "http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras",
+    "body": "{\"type\":\"SaldoInsuficienteException\",\"title\":\"Requisição inválida\",\"status\":400,\"detail\":\"Saldo insuficiente para concluir a compra.\"}"
+  }
+]

@@ -4,7 +4,7 @@
 
 Projeto-base do curso **Desenvolvimento de Software com IA**.
 
-CardPlay é uma plataforma lúdica pequena: a pessoa solicita um cartão virtual interno, adiciona saldo com uma recarga simulada e consulta um catálogo de produtos. O cartão **não** é um cartão bancário. Não há PAN, CVV, banco, gateway nem compra nesta versão.
+CardPlay é uma plataforma lúdica pequena: a pessoa solicita um cartão virtual interno, adiciona saldo com uma recarga simulada, consulta um catálogo e compra um produto com esse saldo. O cartão **não** é um cartão bancário. Não há PAN, CVV, banco nem gateway.
 
 O objetivo não é uma arquitetura impressionante. É um repositório simples, compreensível e adequado para ensinar o ciclo:
 
@@ -17,11 +17,9 @@ O prompt que originou este estado inicial está em [docs/exemplo-prompt-criacao.
 - Solicitar um cartão informando o nome
 - Visualizar titular, código amigável e saldo
 - Recarregar saldo (valor maior que zero)
-- Consultar o histórico de recargas
+- Consultar o histórico de recargas e de compras
 - Ver produtos cadastrados por seed
-- Perceber que a compra é uma funcionalidade futura (botão visível e desabilitado)
-
-A demanda de compra está apenas no [docs/backlog.md](docs/backlog.md).
+- Comprar um produto com o saldo, confirmando o nome e o preço. Sem cartão, o botão **Usar cartão** fica visível e desabilitado
 
 ## Arquitetura resumida
 
@@ -144,7 +142,7 @@ A URL da API vive em `mobile/src/config/ambiente.ts`. Não espalhe endereços pe
 
 ## Visual e usabilidade
 
-Azul identifica o produto (cartão, abas). Laranja identifica dinheiro e ação (saldo, recarga). A paleta fica em `mobile/src/tema/cores.ts`.
+Azul identifica o produto (cartão, abas). Laranja identifica dinheiro e ação (saldo, recarga e compra). A paleta fica em `mobile/src/tema/cores.ts`.
 
 A barra inferior mostra ícone e rótulo acima da área segura. No celular, o catálogo lista um produto por linha; em telas largas usa duas colunas.
 
@@ -156,7 +154,7 @@ Regras completas: [docs/ui.md](docs/ui.md).
 dotnet test backend/CardPlay.sln
 ```
 
-Os testes cobrem criação válida de cartão, recarga inválida, atualização de saldo e registro da movimentação.
+Os testes cobrem criação válida de cartão, recarga inválida, atualização de saldo, registro da movimentação, compra que debita o preço, saldo igual ao preço e saldo insuficiente sem débito.
 
 ## Endpoints
 
@@ -165,7 +163,6 @@ Os testes cobrem criação válida de cartão, recarga inválida, atualização 
 | POST | `/api/cartoes` | Solicitar cartão |
 | GET | `/api/cartoes/{id}` | Consultar cartão |
 | POST | `/api/cartoes/{id}/recargas` | Recarga |
-| GET | `/api/cartoes/{id}/movimentacoes` | Histórico |
+| GET | `/api/cartoes/{id}/movimentacoes` | Histórico de recargas e compras |
+| POST | `/api/cartoes/{id}/compras` | Comprar um produto com o saldo |
 | GET | `/api/produtos` | Catálogo |
-
-Não existe endpoint de compra.

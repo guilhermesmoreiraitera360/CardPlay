@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { AlertaWeb } from './src/componentes/AlertaWeb';
 import { CartaoProvider } from './src/estado/CartaoContexto';
 import { NavegacaoAbas } from './src/navegacao/NavegacaoAbas';
 import { cores } from './src/tema/cores';
@@ -27,6 +28,7 @@ export default function App() {
           <NavigationContainer>
             <StatusBar style="dark" />
             <NavegacaoAbas />
+            <AlertaWeb />
           </NavigationContainer>
         </CartaoProvider>
       </SafeAreaView>

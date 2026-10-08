@@ -1,0 +1,115 @@
+2026-10-07T19:59:04.693Z HTTP GET http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7
+2026-10-07T19:59:04.694Z HTTP GET http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/movimentacoes
+2026-10-07T19:59:04.701Z HTTP 200 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7
+2026-10-07T19:59:04.701Z HTTP 200 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/movimentacoes
+2026-10-07T19:59:05.383Z HTTP OPTIONS http://localhost:5080/api/cartoes
+2026-10-07T19:59:05.387Z HTTP 204 http://localhost:5080/api/cartoes
+2026-10-07T19:59:05.387Z HTTP POST http://localhost:5080/api/cartoes
+2026-10-07T19:59:05.388Z clique primeiro "Solicitar cartão": clicado
+2026-10-07T19:59:05.396Z HTTP 201 http://localhost:5080/api/cartoes
+2026-10-07T19:59:05.793Z Olá! | Seu cartão lúdico | Um cartão interno da plataforma, só para aprender e brincar com saldo. | CardPlay | Cartão virtual interno | CP-NYL59G | ACE-04 | Saldo disponível | R$ 0,00 |  |  | Cartão |  |  | Recarga | 
+2026-10-07T19:59:05.818Z screenshot 01-cartao.png
+2026-10-07T19:59:05.836Z clique ultimo "Recarga": clicado
+2026-10-07T19:59:05.855Z valor da recarga = 4
+2026-10-07T19:59:05.857Z HTTP OPTIONS http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/recargas
+2026-10-07T19:59:05.870Z HTTP 204 http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/recargas
+2026-10-07T19:59:05.877Z HTTP POST http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/recargas
+2026-10-07T19:59:05.878Z clique primeiro "Recarregar": clicado
+2026-10-07T19:59:05.885Z HTTP 200 http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/recargas
+2026-10-07T19:59:05.899Z HTTP GET http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/movimentacoes
+2026-10-07T19:59:05.907Z HTTP 200 http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/movimentacoes
+2026-10-07T19:59:06.287Z Saldo atual: R$ 4,00
+R$ 10,00
+R$ 25,00
+R
+2026-10-07T19:59:06.331Z screenshot 02-recarga-4.png
+2026-10-07T19:59:06.353Z HTTP GET http://localhost:5080/api/produtos
+2026-10-07T19:59:06.353Z clique ultimo "Catálogo": clicado
+2026-10-07T19:59:06.355Z HTTP 200 http://localhost:5080/api/produtos
+2026-10-07T19:59:06.759Z catálogo antes:
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 4,00
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podcast.
+R$ 79,00
+Usar cartão
+🥪
+Lanche da tarde
+Combo doce e salgado para recarregar a energi
+2026-10-07T19:59:06.796Z screenshot 03-catalogo-saldo-igual.png
+2026-10-07T19:59:06.802Z Usar cartão de "Adesivo CardPlay": clicado
+2026-10-07T19:59:06.860Z screenshot 04-alerta-adesivo.png
+2026-10-07T19:59:06.863Z HTTP OPTIONS http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/compras
+2026-10-07T19:59:06.864Z HTTP 204 http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/compras
+2026-10-07T19:59:06.874Z HTTP POST http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/compras
+2026-10-07T19:59:06.874Z clique primeiro "Confirmar": clicado
+2026-10-07T19:59:06.874Z HTTP 200 http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/compras
+2026-10-07T19:59:06.877Z HTTP GET http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/movimentacoes
+2026-10-07T19:59:06.880Z HTTP 200 http://localhost:5080/api/cartoes/518814c5-f699-4db0-af64-a52965500247/movimentacoes
+2026-10-07T19:59:07.279Z depois:
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 0,00
+Compra registrada. Saldo: R$ 0,00
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para 
+2026-10-07T19:59:07.317Z screenshot 05-saldo-zero.png
+2026-10-07T19:59:07.328Z clique ultimo "Cartão": clicado
+2026-10-07T19:59:07.395Z screenshot 06-cartao-zero.png
+2026-10-07T19:59:07.410Z clique ultimo "Histórico": clicado
+2026-10-07T19:59:07.412Z histórico:
+Movimentações
+Histórico deste cartão.
+Adesivo CardPlay
+R$ 4,00
+Quantidade 1
+07/10/2026, 19:59
+Recarga
++ R$ 4,00
+07/10/2026, 19:59
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 0,00
+Compra registrada. Saldo: R$ 0,00
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar
+2026-10-07T19:59:07.471Z screenshot 07-historico.png

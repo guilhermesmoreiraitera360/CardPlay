@@ -21,6 +21,7 @@ builder.Services.AddScoped<ICartaoRepositorio, CartaoRepositorio>();
 builder.Services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
 builder.Services.AddScoped<ICartaoServico, CartaoServico>();
 builder.Services.AddScoped<IProdutoServico, ProdutoServico>();
+builder.Services.AddScoped<ICompraServico, CompraServico>();
 
 if (builder.Environment.IsDevelopment())
 {

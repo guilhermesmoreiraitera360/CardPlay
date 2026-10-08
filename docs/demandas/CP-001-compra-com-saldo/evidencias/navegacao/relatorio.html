@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CP-001 — Navegação da compra com saldo</title>
+  <style>
+    body { font-family: Georgia, serif; color: #1b2430; background: #f3f6fb; margin: 0; }
+    main { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; }
+    h1, h2 { font-family: "Segoe UI", sans-serif; }
+    h1 { font-size: 1.8rem; margin-bottom: 0.2rem; }
+    h2 { font-size: 1.2rem; margin-top: 2rem; }
+    p, li { line-height: 1.5; }
+    table { width: 100%; border-collapse: collapse; background: #fff; margin: 12px 0 20px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #d7e2f0; vertical-align: top; }
+    th { background: #e4eef9; }
+    .ok { color: #1d5aa6; font-weight: 700; }
+    figure { margin: 12px 0 24px; }
+    img { max-width: 100%; height: auto; border: 1px solid #d7e2f0; background: #fff; }
+    figcaption { font-size: 0.9rem; color: #5b6775; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>CP-001 — Navegação da compra com saldo</h1>
+    <p>Rodada executada em 2026-10-08 no navegador integrado do Cursor. A decisão de aceitar a entrega continua humana.</p>
+
+    <h2>Ambiente</h2>
+    <table>
+      <tr><th>Campo</th><th>Valor</th></tr>
+      <tr><td>Aplicativo</td><td>http://localhost:8081</td></tr>
+      <tr><td>API</td><td>http://127.0.0.1:5080</td></tr>
+      <tr><td>Branch</td><td>docs/cp-001-compra-com-saldo</td></tr>
+      <tr><td>Commit da jornada</td><td>4a199f2. O NAV-08 foi refeito depois da correção da grade, ainda sem commit.</td></tr>
+      <tr><td>Navegador</td><td>cursor-ide-browser, aba visível</td></tr>
+    </table>
+
+    <h2>Resultado</h2>
+    <table>
+      <tr><th>Total</th><th>Quantidade</th></tr>
+      <tr><td>Planejado</td><td>8</td></tr>
+      <tr><td>Executado</td><td>8</td></tr>
+      <tr><td>Passou</td><td>8</td></tr>
+      <tr><td>Falhou</td><td>0</td></tr>
+    </table>
+
+    <h2>Cartões</h2>
+    <table>
+      <tr><th>Código</th><th>Saldo ao fim</th><th>Movimentações</th></tr>
+      <tr><td>CP-GK2U8Y</td><td>R$ 1,50</td><td>Recarga R$ 10,00; compra Café especial R$ 8,50, quantidade 1</td></tr>
+      <tr><td>CP-RZ3TQ2</td><td>R$ 0,00</td><td>Recarga R$ 4,00; compra Adesivo CardPlay R$ 4,00, quantidade 1</td></tr>
+    </table>
+
+    <h2>Cenários</h2>
+    <table>
+      <tr><th>ID</th><th>Resultado</th><th>Observado</th></tr>
+      <tr><td>NAV-01</td><td class="ok">Passou</td><td>Sem cartão, “Usar cartão” visível e desabilitado, com “Solicite um cartão”.</td></tr>
+      <tr><td>NAV-02</td><td class="ok">Passou</td><td>CP-GK2U8Y, recarga R$ 10,00, café a R$ 8,50 no catálogo, histórico com “+ R$ 10,00”.</td></tr>
+      <tr><td>NAV-03</td><td class="ok">Passou</td><td>Aviso “Confirmar a compra de Café especial por R$ 8,50?”. Cancelar manteve R$ 10,00 e não chamou a compra.</td></tr>
+      <tr><td>NAV-04</td><td class="ok">Passou</td><td>Compra do café, saldo R$ 1,50, histórico com nome, quantidade 1 e R$ 8,50 sem “+”.</td></tr>
+      <tr><td>NAV-05</td><td class="ok">Passou</td><td>Saldo e compra continuaram depois de percorrer as abas e recarregar a página. A URL do documento não mudou entre abas.</td></tr>
+      <tr><td>NAV-06</td><td class="ok">Passou</td><td>“Saldo insuficiente para concluir a compra.” Saldo R$ 1,50. POST /compras respondeu 400. Histórico sem adesivo.</td></tr>
+      <tr><td>NAV-07</td><td class="ok">Passou</td><td>CP-RZ3TQ2, recarga R$ 4,00, adesivo, saldo R$ 0,00, compra sem “+” e recarga com “+”.</td></tr>
+      <tr><td>NAV-08</td><td class="ok">Passou</td><td>640 px: um produto por linha. 960 px: duas colunas. Saldo R$ 0,00 e “Usar cartão” habilitado. Sem compra nova.</td></tr>
+    </table>
+
+    <h2>NAV-08</h2>
+    <p>A primeira tentativa mediu a janela e manteve duas colunas abaixo de 720 px. A grade passou a usar a largura medida do catálogo. A nova execução, no mesmo cartão e sem compra nova, ficou assim:</p>
+    <figure>
+      <img src="nav-08-abaixo-720.png" alt="Catálogo em uma coluna a 640 pixels, saldo R$ 0,00">
+      <figcaption>640×900. Um produto por linha. Saldo R$ 0,00. Botão “Usar cartão” habilitado.</figcaption>
+    </figure>
+    <figure>
+      <img src="nav-08-largo.png" alt="Catálogo em duas colunas a 960 pixels, saldo R$ 0,00">
+      <figcaption>960×900. Duas colunas. Saldo R$ 0,00. Botão “Usar cartão” habilitado.</figcaption>
+    </figure>
+  </main>
+</body>
+</html>
