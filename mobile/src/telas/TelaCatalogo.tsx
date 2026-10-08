@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { produtoApi } from '../api/produtoApi';
 import { CardProduto } from '../componentes/CardProduto';
@@ -18,9 +18,30 @@ export function TelaCatalogo() {
   const [erroCompra, setErroCompra] = useState<string | null>(null);
   const [enviandoId, setEnviandoId] = useState<string | null>(null);
   const { cartao, comprar } = useCartao();
-  const { width } = useWindowDimensions();
+  const { width: larguraJanela } = useWindowDimensions();
+  const [larguraMedida, setLarguraMedida] = useState<number | null>(null);
   const paddingTela = usePaddingTela(18);
-  const duasColunas = width >= LARGURA_DUAS_COLUNAS;
+  const medidaRef = useRef<View>(null);
+  const largura = larguraMedida ?? larguraJanela;
+  const duasColunas = largura >= LARGURA_DUAS_COLUNAS;
+
+  useEffect(() => {
+    const node = medidaRef.current as unknown as Element | null;
+    if (node == null || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const larguraObservada = entries[0]?.contentRect.width;
+      if (larguraObservada == null) {
+        return;
+      }
+      const proxima = Math.round(larguraObservada);
+      setLarguraMedida((atual) => (atual === proxima ? atual : proxima));
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let ativo = true;
@@ -63,7 +84,8 @@ export function TelaCatalogo() {
   }
 
   return (
-    <ScrollView contentContainerStyle={[estilos.conteudo, paddingTela]}>
+    <View ref={medidaRef} style={estilos.medida}>
+      <ScrollView contentContainerStyle={[estilos.conteudo, paddingTela]}>
       <Text style={estilos.titulo}>Catálogo</Text>
       <Text style={estilos.subtitulo}>
         {cartao
@@ -91,11 +113,15 @@ export function TelaCatalogo() {
           </View>
         ))}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const estilos = StyleSheet.create({
+  medida: {
+    flex: 1,
+  },
   conteudo: {
     flexGrow: 1,
     backgroundColor: cores.fundo,
