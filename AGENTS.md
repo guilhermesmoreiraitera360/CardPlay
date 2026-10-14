@@ -4,6 +4,23 @@ Orientações para pessoas e para agentes de IA que forem modificar este reposit
 
 Alunos que ainda não têm o ambiente: o primeiro material é o `COMECEPORAQUI.md`. Se pedirem para instalar SDK, Node, Git ou pacotes, siga esse arquivo; não invente versões.
 
+## Personas
+
+Perfis portáteis em `personas/`. Eles não substituem este arquivo.
+
+Carregue um perfil só quando a tarefa nomear o papel. Leia esse arquivo e as fontes que ele listar. Não leia os seis perfis em toda tarefa.
+
+| Papel nomeado na tarefa | Arquivo |
+| --- | --- |
+| PO | `personas/po.md` |
+| PM | `personas/pm.md` |
+| Tech Lead | `personas/tech-lead.md` |
+| QA | `personas/qa.md` |
+| React Native ou aplicativo | `personas/react-native.md` |
+| ASP.NET Core, API ou backend | `personas/aspnet-core.md` |
+
+Sem papel nomeado, siga apenas este `AGENTS.md`.
+
 ## Antes de mudar qualquer arquivo
 
 1. Leia este arquivo, o `README.md`, `docs/architecture.md` e `docs/ui.md`. Para setup de máquina, leia `COMECEPORAQUI.md`.
