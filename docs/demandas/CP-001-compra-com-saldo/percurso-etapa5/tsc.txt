@@ -1,0 +1,13 @@
+---
+pid: 11650
+cwd: "/home/guilherme/repos/ia360/mobile"
+command: "node node_modules/typescript/bin/tsc --noEmit"
+started_at: 2026-10-07T19:45:06.265Z
+running_for_ms: 7        
+---
+
+---
+exit_code: 0
+elapsed_ms: 1906
+ended_at: 2026-10-07T19:45:08.171Z
+---

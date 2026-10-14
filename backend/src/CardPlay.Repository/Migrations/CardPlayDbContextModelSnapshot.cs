@@ -20,7 +20,6 @@ namespace CardPlay.Repository.Migrations
             modelBuilder.Entity("CardPlay.Domain.Entidades.Cartao", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CodigoAmigavel")
@@ -48,7 +47,6 @@ namespace CardPlay.Repository.Migrations
             modelBuilder.Entity("CardPlay.Domain.Entidades.MovimentacaoCartao", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("CartaoId")
@@ -61,6 +59,16 @@ namespace CardPlay.Repository.Migrations
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("NomeProduto")
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ProdutoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Quantidade")
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Valor")
                         .HasPrecision(18, 2)

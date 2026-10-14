@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { cartaoApi } from '../api/cartaoApi';
 import { ErroApi } from '../api/clienteHttp';
 import { obterCartaoIdSalvo, salvarCartaoId } from '../armazenamento/cartaoSelecionado';
-import type { Cartao, Movimentacao } from '../tipos';
+import type { Cartao, Compra, Movimentacao } from '../tipos';
 
 type CartaoContextoValor = {
   cartao: Cartao | null;
@@ -11,6 +11,7 @@ type CartaoContextoValor = {
   erro: string | null;
   solicitar: (nomeTitular: string) => Promise<void>;
   recarregar: (valor: number, descricao?: string) => Promise<void>;
+  comprar: (produtoId: string) => Promise<Compra>;
   atualizar: () => Promise<void>;
 };
 
@@ -94,9 +95,22 @@ export function CartaoProvider({ children }: { children: ReactNode }) {
     setMovimentacoes(historico);
   }, [cartao]);
 
+  const comprar = useCallback(async (produtoId: string) => {
+    if (!cartao) {
+      throw new Error('Solicite um cartão antes de comprar.');
+    }
+
+    setErro(null);
+    const compra = await cartaoApi.comprar(cartao.id, produtoId);
+    const historico = await cartaoApi.listarMovimentacoes(cartao.id);
+    setCartao({ ...cartao, saldo: compra.saldo });
+    setMovimentacoes(historico);
+    return compra;
+  }, [cartao]);
+
   const valor = useMemo(
-    () => ({ cartao, movimentacoes, carregando, erro, solicitar, recarregar, atualizar }),
-    [cartao, movimentacoes, carregando, erro, solicitar, recarregar, atualizar],
+    () => ({ cartao, movimentacoes, carregando, erro, solicitar, recarregar, comprar, atualizar }),
+    [cartao, movimentacoes, carregando, erro, solicitar, recarregar, comprar, atualizar],
   );
 
   return <CartaoContexto.Provider value={valor}>{children}</CartaoContexto.Provider>;

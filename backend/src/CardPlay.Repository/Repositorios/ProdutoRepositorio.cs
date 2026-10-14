@@ -21,4 +21,11 @@ public class ProdutoRepositorio : IProdutoRepositorio
             .OrderBy(produto => produto.Nome)
             .ToListAsync(cancellationToken);
     }
+
+    public Task<Produto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return _contexto.Produtos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(produto => produto.Id == id, cancellationToken);
+    }
 }

@@ -13,8 +13,8 @@ public class TratadorExcecoes : IExceptionHandler
     {
         var (status, titulo) = exception switch
         {
-            RecargaInvalidaException or NomeTitularInvalidoException => (StatusCodes.Status400BadRequest, "Requisição inválida"),
-            CartaoNaoEncontradoException => (StatusCodes.Status404NotFound, "Recurso não encontrado"),
+            RecargaInvalidaException or NomeTitularInvalidoException or SaldoInsuficienteException => (StatusCodes.Status400BadRequest, "Requisição inválida"),
+            CartaoNaoEncontradoException or ProdutoNaoEncontradoException => (StatusCodes.Status404NotFound, "Recurso não encontrado"),
             _ => (StatusCodes.Status500InternalServerError, "Erro interno")
         };
 

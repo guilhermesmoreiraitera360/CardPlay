@@ -4,4 +4,4 @@ Demandas futuras registradas sem regras extras. Não implementar até serem pedi
 
 ## Utilizar saldo em produtos
 
-Permitir que o usuário utilize o saldo do cartão para adquirir produtos disponíveis na plataforma.
+Atendida. A CP-001 implementa a compra de um produto com o saldo do cartão, na quantidade 1, com o registro na mesma lista das recargas. Estoque, carrinho, checkout e autenticação não fazem parte dessa entrega.

@@ -51,6 +51,21 @@ public class Cartao
         return movimentacao;
     }
 
+    public MovimentacaoCartao Comprar(Produto produto)
+    {
+        ArgumentNullException.ThrowIfNull(produto);
+
+        if (Saldo < produto.Preco)
+        {
+            throw new SaldoInsuficienteException();
+        }
+
+        Saldo -= produto.Preco;
+        var movimentacao = MovimentacaoCartao.CriarCompra(Id, produto.Id, produto.Nome, produto.Preco);
+        _movimentacoes.Add(movimentacao);
+        return movimentacao;
+    }
+
     private static string GerarCodigoAmigavel()
     {
         const string alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

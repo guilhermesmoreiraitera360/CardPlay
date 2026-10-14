@@ -1,0 +1,461 @@
+2026-10-07T19:45:36.978Z HTTP GET http://localhost:5080/api/cartoes/207a5578-8ed8-4383-b331-7ed5c1599b21
+2026-10-07T19:45:36.979Z HTTP GET http://localhost:5080/api/cartoes/207a5578-8ed8-4383-b331-7ed5c1599b21/movimentacoes
+2026-10-07T19:45:36.995Z HTTP 200 http://localhost:5080/api/cartoes/207a5578-8ed8-4383-b331-7ed5c1599b21
+2026-10-07T19:45:36.995Z HTTP 200 http://localhost:5080/api/cartoes/207a5578-8ed8-4383-b331-7ed5c1599b21/movimentacoes
+2026-10-07T19:45:37.474Z campo "Seu nome" = Percurso Etapa 5
+2026-10-07T19:45:37.480Z HTTP OPTIONS http://localhost:5080/api/cartoes
+2026-10-07T19:45:37.482Z HTTP 204 http://localhost:5080/api/cartoes
+2026-10-07T19:45:37.483Z HTTP POST http://localhost:5080/api/cartoes
+2026-10-07T19:45:37.483Z clique primeiro "Solicitar cartão": clicado
+2026-10-07T19:45:37.489Z HTTP 201 http://localhost:5080/api/cartoes
+2026-10-07T19:45:37.924Z screenshot 02-cartao.png
+2026-10-07T19:45:37.940Z clique ultimo "Recarga": clicado
+2026-10-07T19:45:37.948Z topo após aba Recarga: Recarga simulada. Nada é cobrado de verdade.
+2026-10-07T19:45:37.954Z clique primeiro "R$ 10,00": clicado
+2026-10-07T19:45:37.955Z HTTP OPTIONS http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/recargas
+2026-10-07T19:45:37.957Z HTTP 204 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/recargas
+2026-10-07T19:45:37.959Z HTTP POST http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/recargas
+2026-10-07T19:45:37.959Z clique primeiro "Recarregar": clicado
+2026-10-07T19:45:37.963Z HTTP 200 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/recargas
+2026-10-07T19:45:37.964Z HTTP GET http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/movimentacoes
+2026-10-07T19:45:37.968Z HTTP 200 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/movimentacoes
+2026-10-07T19:45:38.362Z tela de recarga:
+Olá!
+Seu cartão lúdico
+Um cartão interno da plataforma, só para aprender e brincar com saldo.
+CardPlay
+Cartão virtual interno
+CP-QBDG8R
+Percurso Etapa 5
+Saldo disponível
+R$ 10,00
+Adicionar saldo
+Recarga simulada. Nada é cobrado de verdade.
+Saldo atual: R$ 10,00
+R$ 10,00
+R$ 25,00
+R$ 50,00
+Valor
+Descrição
+Recarregar
+Recarga registrada com sucesso.
+
+
+Cartão
+
+
+Recarga
+
+
+Histórico
+
+
+Catálogo
+2026-10-07T19:45:38.378Z screenshot 03-recarga-10.png
+2026-10-07T19:45:38.393Z HTTP GET http://localhost:5080/api/produtos
+2026-10-07T19:45:38.394Z clique ultimo "Catálogo": clicado
+2026-10-07T19:45:38.396Z topo após aba Catálogo: O preço de cada produto é o valor debitado do saldo ao confirmar.
+2026-10-07T19:45:38.396Z HTTP 200 http://localhost:5080/api/produtos
+2026-10-07T19:45:38.801Z catálogo antes:
+Olá!
+Seu cartão lúdico
+Um cartão interno da plataforma, só para aprender e brincar com saldo.
+CardPlay
+Cartão virtual interno
+CP-QBDG8R
+Percurso Etapa 5
+Saldo disponível
+R$ 10,00
+Adicionar saldo
+Recarga simulada. Nada é cobrado de verdade.
+Saldo atual: R$ 10,00
+R$ 10,00
+R$ 25,00
+R$ 50,00
+Valor
+Descrição
+Recarregar
+Recarga registrada com sucesso.
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 10,00
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podcast.
+R$ 79,00
+Usar cartão
+🥪
+Lanche da tarde
+Combo doce e salgado para recarregar a energia.
+R$ 18,75
+Usar cartão
+📘
+Livro ilustrado
+História curta com arte colorida para ler no intervalo.
+R$ 32,90
+Usar cartão
+
+
+Cartão
+
+
+Recarga
+
+
+Histórico
+
+
+Catálogo
+2026-10-07T19:45:38.801Z trecho do café:
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podc
+2026-10-07T19:45:38.844Z screenshot 04-catalogo-saldo-10.png
+2026-10-07T19:45:38.849Z Usar cartão de "Café especial": clicado
+2026-10-07T19:45:38.851Z alerta:
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podcast.
+R$ 79,00
+Usar cartão
+🥪
+Lanche da tarde
+C
+2026-10-07T19:45:38.909Z screenshot 05-alerta-cafe.png
+2026-10-07T19:45:38.913Z clique primeiro "Cancelar": clicado
+2026-10-07T19:45:39.717Z compras HTTP após cancelar: 0
+2026-10-07T19:45:39.717Z alerta sumiu após cancelar: true
+2026-10-07T19:45:39.717Z saldo após cancelar contém R$ 10,00: true
+2026-10-07T19:45:39.755Z screenshot 06-cancelou.png
+2026-10-07T19:45:39.760Z Usar cartão de "Café especial": clicado
+2026-10-07T19:45:39.763Z HTTP OPTIONS http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras
+2026-10-07T19:45:39.764Z HTTP 204 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras
+2026-10-07T19:45:39.783Z HTTP POST http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras
+2026-10-07T19:45:39.785Z clique primeiro "Confirmar": clicado
+2026-10-07T19:45:39.790Z HTTP 200 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras
+2026-10-07T19:45:39.790Z HTTP GET http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/movimentacoes
+2026-10-07T19:45:39.794Z HTTP 200 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/movimentacoes
+2026-10-07T19:45:40.193Z catálogo após café:
+Olá!
+Seu cartão lúdico
+Um cartão interno da plataforma, só para aprender e brincar com saldo.
+CardPlay
+Cartão virtual interno
+CP-QBDG8R
+Percurso Etapa 5
+Saldo disponível
+R$ 1,50
+Adicionar saldo
+Recarga simulada. Nada é cobrado de verdade.
+Saldo atual: R$ 1,50
+R$ 10,00
+R$ 25,00
+R$ 50,00
+Valor
+Descrição
+Recarregar
+Recarga registrada com sucesso.
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 1,50
+Compra registrada. Saldo: R$ 1,50
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podcast.
+R$ 79,00
+Usar cartão
+🥪
+Lanche da tarde
+Combo doce e salgado para recarregar a energia.
+R$ 18,75
+Usar cartão
+📘
+Livro ilustrado
+História curta com arte colorida para ler no intervalo.
+R$ 32,90
+Usar cartão
+
+
+Cartão
+
+
+Recarga
+
+
+Histórico
+
+
+Catálogo
+2026-10-07T19:45:40.215Z screenshot 07-compra-cafe.png
+2026-10-07T19:45:40.228Z clique ultimo "Cartão": clicado
+2026-10-07T19:45:40.229Z topo após aba Cartão: Olá!
+Seu cartão lúdico
+Um cartão interno da plataforma, só para aprender e brinc
+2026-10-07T19:45:40.230Z aba cartão após compra:
+Olá!
+Seu cartão lúdico
+Um cartão interno da plataforma, só para aprender e brincar com saldo.
+CardPlay
+Cartão virtual interno
+CP-QBDG8R
+Percurso Etapa 5
+Saldo disponível
+R$ 1,50
+Adicionar saldo
+Recarga simulada. Nada é cobrado de verdade.
+Saldo atual: R$ 1,50
+R$ 10,00
+R$ 25,00
+R$ 50,00
+Valor
+Descrição
+Recarregar
+Recarga registrada com sucesso.
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 1,50
+Compra registrada. Saldo: R$ 1,50
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podcast.
+R$ 79,00
+Usar cartão
+🥪
+Lanche da tarde
+Combo doce e salgado para recarregar a energia.
+R$ 18,75
+Usar cartão
+📘
+Livro ilustrado
+História curta com arte colorida para ler no intervalo.
+R$ 32,90
+Usar cartão
+
+
+Cartão
+
+
+Recarga
+
+
+Histórico
+
+
+Catálogo
+2026-10-07T19:45:40.262Z screenshot 08-cartao-apos-compra.png
+2026-10-07T19:45:40.278Z clique ultimo "Catálogo": clicado
+2026-10-07T19:45:40.279Z topo após aba Catálogo: O preço de cada produto é o valor debitado do saldo ao confirmar.
+2026-10-07T19:45:40.285Z Usar cartão de "Adesivo CardPlay": clicado
+2026-10-07T19:45:40.333Z screenshot 09-alerta-adesivo.png
+2026-10-07T19:45:40.346Z HTTP POST http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras
+2026-10-07T19:45:40.346Z clique primeiro "Confirmar": clicado
+2026-10-07T19:45:40.346Z HTTP 400 http://localhost:5080/api/cartoes/76066d9e-9442-462b-87da-eceb478d3be7/compras
+2026-10-07T19:45:40.751Z catálogo após recusa:
+Olá!
+Seu cartão lúdico
+Um cartão interno da plataforma, só para aprender e brincar com saldo.
+CardPlay
+Cartão virtual interno
+CP-QBDG8R
+Percurso Etapa 5
+Saldo disponível
+R$ 1,50
+Adicionar saldo
+Recarga simulada. Nada é cobrado de verdade.
+Saldo atual: R$ 1,50
+R$ 10,00
+R$ 25,00
+R$ 50,00
+Valor
+Descrição
+Recarregar
+Recarga registrada com sucesso.
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 1,50
+Saldo insuficiente para concluir a compra.
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podcast.
+R$ 79,00
+Usar cartão
+🥪
+Lanche da tarde
+Combo doce e salgado para recarregar a energia.
+R$ 18,75
+Usar cartão
+📘
+Livro ilustrado
+História curta com arte colorida para ler no intervalo.
+R$ 32,90
+Usar cartão
+
+
+Cartão
+
+
+Recarga
+
+
+Histórico
+
+
+Catálogo
+2026-10-07T19:45:40.796Z screenshot 10-saldo-insuficiente.png
+2026-10-07T19:45:40.808Z clique ultimo "Histórico": clicado
+2026-10-07T19:45:40.809Z topo após aba Histórico: Histórico simples das recargas deste cartão.
+2026-10-07T19:45:40.810Z histórico:
+Olá!
+Seu cartão lúdico
+Um cartão interno da plataforma, só para aprender e brincar com saldo.
+CardPlay
+Cartão virtual interno
+CP-QBDG8R
+Percurso Etapa 5
+Saldo disponível
+R$ 1,50
+Adicionar saldo
+Recarga simulada. Nada é cobrado de verdade.
+Saldo atual: R$ 1,50
+R$ 10,00
+R$ 25,00
+R$ 50,00
+Valor
+Descrição
+Recarregar
+Recarga registrada com sucesso.
+Movimentações
+Histórico simples das recargas deste cartão.
+Compra
++ R$ 8,50
+07/10/2026, 19:45
+Recarga
++ R$ 10,00
+07/10/2026, 19:45
+Catálogo
+O preço de cada produto é o valor debitado do saldo ao confirmar.
+Saldo atual: R$ 1,50
+Saldo insuficiente para concluir a compra.
+🌟
+Adesivo CardPlay
+Um sticker brilhante para personalizar seu caderno.
+R$ 4,00
+Usar cartão
+☕
+Café especial
+Um espresso cremoso para começar bem o dia.
+R$ 8,50
+Usar cartão
+👕
+Camiseta lúdica
+Algodão macio com estampa do cartão virtual.
+R$ 59,90
+Usar cartão
+🎧
+Fone compacto
+Áudio leve para estudar ou ouvir um podcast.
+R$ 79,00
+Usar cartão
+🥪
+Lanche da tarde
+Combo doce e salgado para recarregar a energia.
+R$ 18,75
+Usar cartão
+📘
+Livro ilustrado
+História curta com arte colorida para ler no intervalo.
+R$ 32,90
+Usar cartão
+
+
+Cartão
+
+
+Recarga
+
+
+Histórico
+
+
+Catálogo
+2026-10-07T19:45:40.862Z screenshot 11-historico.png
