@@ -33,9 +33,9 @@ Vermelho (`coral`) fica só para erro, para não se misturar com o laranja.
 - A barra inferior precisa mostrar ícone e rótulo por completo. Ela fica acima da área segura (home indicator / barra do sistema). Não use altura tão baixa que corte o texto.
 - O conteúdo das telas respeita o recorte superior (notch / status bar) via `usePaddingTela`.
 - Catálogo em tela estreita (menos de 720px): **um produto por linha**, layout de lista. Em telas largas: grade de duas colunas.
-- Botão **Usar cartão** permanece visível. Com cartão no contexto, o toque abre a confirmação com o nome e o preço do catálogo; cancelar não compra e confirmar chama a API. Sem cartão, fica desabilitado. Na web, essa confirmação é um aviso na própria tela.
+- Botão **Usar cartão** permanece visível. Com cartão no contexto, a quantidade é escolhida no card e o toque abre a confirmação com o produto, a quantidade, o preço unitário e o total; cancelar não compra e confirmar chama a API. Sem cartão, fica desabilitado. Na web, essa confirmação é um aviso na própria tela.
 - O catálogo mostra o saldo atual. Depois de uma compra concluída, permanece nele e informa o saldo devolvido.
 - Recarga mostra o saldo atual, sugestões de valor e mensagem de sucesso ou erro.
-- O histórico lista recargas e compras do mesmo cartão. A recarga mantém a descrição e o valor com “+”. A compra mostra o nome do produto, a quantidade, o valor sem “+” e a data e hora no mesmo formato da recarga.
+- O histórico lista recargas e compras do mesmo cartão. A recarga mantém a descrição e o valor com “+”. A compra mostra o nome do produto, a quantidade, o preço unitário, o total sem “+” e a data e hora no mesmo formato da recarga.
 - Sem animações ou bibliotecas de UI pesadas. Tipografia clara, cantos arredondados, bastante espaço.
 - A URL da API não aparece nas telas; só em `mobile/src/config/ambiente.ts`.

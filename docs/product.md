@@ -9,7 +9,7 @@ CardPlay é uma plataforma lúdica interna. O cartão não representa um cartão
 3. Adicionar saldo com uma recarga simulada, desde que o valor seja maior que zero.
 4. Consultar o histórico das recargas e das compras.
 5. Percorrer um catálogo pequeno de produtos fictícios já cadastrados.
-6. Comprar um produto com o saldo do cartão, depois de ver o nome e o preço e confirmar. A quantidade é uma unidade. O saldo final é o anterior menos o preço do catálogo. Se o saldo for igual ao preço, fica zero. Se for menor, a compra não acontece e o saldo permanece.
+6. Comprar um produto com o saldo do cartão, depois de escolher a quantidade e confirmar. A confirmação mostra o produto, a quantidade, o preço unitário e o total. O saldo final é o anterior menos o total. Se o saldo for igual ao total, fica zero. Se for menor, a compra não acontece e o saldo permanece.
 
 ## O que esta versão não faz
 
@@ -27,6 +27,6 @@ A interface é lúdica, com bastante espaço e duas cores de destaque: **azul** 
 
 A barra inferior permanece visível no celular, com ícone e rótulo acima da área segura. O catálogo lista um produto por linha em telas estreitas e duas colunas em telas largas.
 
-O botão **Usar cartão** fica visível. Com um cartão no aplicativo, ele pede confirmação do nome e do preço. Sem cartão, permanece desabilitado.
+O botão **Usar cartão** fica visível. Com um cartão no aplicativo, a quantidade é escolhida no card e a confirmação mostra o produto, a quantidade, o preço unitário e o total. Sem cartão, permanece desabilitado.
 
 Detalhe da paleta e das regras: [ui.md](ui.md).

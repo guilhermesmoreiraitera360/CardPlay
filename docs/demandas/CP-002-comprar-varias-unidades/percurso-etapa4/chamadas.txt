@@ -1,0 +1,130 @@
+===== 01-cartao-saldo-maior =====
+REQUEST POST http://localhost:5080/api/cartoes
+{"nomeTitular":"Etapa Quatro"}
+RESPONSE
+{"id":"4d74c8c2-d8a0-4a0c-ac43-b9d8c5ee06d2","nomeTitular":"Etapa Quatro","codigoAmigavel":"CP-QX5MS8","saldo":0,"dataCriacao":"2026-10-15T13:48:14.5291554Z"}
+HTTP_STATUS:201
+
+===== 02-recarga-100 =====
+REQUEST POST http://localhost:5080/api/cartoes/4d74c8c2-d8a0-4a0c-ac43-b9d8c5ee06d2/recargas
+{"valor":100,"descricao":"Recarga"}
+RESPONSE
+{"id":"4d74c8c2-d8a0-4a0c-ac43-b9d8c5ee06d2","nomeTitular":"Etapa Quatro","codigoAmigavel":"CP-QX5MS8","saldo":100.0,"dataCriacao":"2026-10-15T13:48:14.5291554"}
+HTTP_STATUS:200
+
+===== 03-compra-3-cafe =====
+REQUEST POST http://localhost:5080/api/cartoes/4d74c8c2-d8a0-4a0c-ac43-b9d8c5ee06d2/compras
+{"produtoId":"6f1c2a7e-0c4a-4b1d-9e2f-1a2b3c4d5e6f","quantidade":3,"precoUnitarioVisto":8.50}
+RESPONSE
+{"cartaoId":"4d74c8c2-d8a0-4a0c-ac43-b9d8c5ee06d2","saldo":74.5,"registro":{"id":"93ac6747-6380-48cc-831b-1f67d832e718","valor":25.5,"descricao":"Compra","dataHora":"2026-10-15T13:48:15.1035998Z","produtoId":"6f1c2a7e-0c4a-4b1d-9e2f-1a2b3c4d5e6f","nomeProduto":"Café especial","quantidade":3,"precoUnitario":8.5}}
+HTTP_STATUS:200
+
+===== 04-cartao-saldo-igual =====
+REQUEST POST http://localhost:5080/api/cartoes
+{"nomeTitular":"Saldo Igual"}
+RESPONSE
+{"id":"b5d852ab-5fcf-443f-82e9-fadf2bbc614e","nomeTitular":"Saldo Igual","codigoAmigavel":"CP-B4MZSA","saldo":0,"dataCriacao":"2026-10-15T13:48:15.1543424Z"}
+HTTP_STATUS:201
+
+===== 05-recarga-12 =====
+REQUEST POST http://localhost:5080/api/cartoes/b5d852ab-5fcf-443f-82e9-fadf2bbc614e/recargas
+{"valor":12,"descricao":"Recarga"}
+RESPONSE
+{"id":"b5d852ab-5fcf-443f-82e9-fadf2bbc614e","nomeTitular":"Saldo Igual","codigoAmigavel":"CP-B4MZSA","saldo":12.0,"dataCriacao":"2026-10-15T13:48:15.1543424"}
+HTTP_STATUS:200
+
+===== 06-compra-3-adesivo-zera =====
+REQUEST POST http://localhost:5080/api/cartoes/b5d852ab-5fcf-443f-82e9-fadf2bbc614e/compras
+{"produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","quantidade":3,"precoUnitarioVisto":4.00}
+RESPONSE
+{"cartaoId":"b5d852ab-5fcf-443f-82e9-fadf2bbc614e","saldo":0.0,"registro":{"id":"14065961-0881-4759-8c34-7d13ecd9478a","valor":12.0,"descricao":"Compra","dataHora":"2026-10-15T13:48:15.1968326Z","produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","nomeProduto":"Adesivo CardPlay","quantidade":3,"precoUnitario":4.0}}
+HTTP_STATUS:200
+
+===== 07-cartao-insuficiente =====
+REQUEST POST http://localhost:5080/api/cartoes
+{"nomeTitular":"Saldo Curto"}
+RESPONSE
+{"id":"b383b865-6e74-4316-90d8-3283f5d2303d","nomeTitular":"Saldo Curto","codigoAmigavel":"CP-NAWQ7Z","saldo":0,"dataCriacao":"2026-10-15T13:48:15.207328Z"}
+HTTP_STATUS:201
+
+===== 08-recarga-10 =====
+REQUEST POST http://localhost:5080/api/cartoes/b383b865-6e74-4316-90d8-3283f5d2303d/recargas
+{"valor":10,"descricao":"Recarga"}
+RESPONSE
+{"id":"b383b865-6e74-4316-90d8-3283f5d2303d","nomeTitular":"Saldo Curto","codigoAmigavel":"CP-NAWQ7Z","saldo":10.0,"dataCriacao":"2026-10-15T13:48:15.207328"}
+HTTP_STATUS:200
+
+===== 09-compra-saldo-insuficiente =====
+REQUEST POST http://localhost:5080/api/cartoes/b383b865-6e74-4316-90d8-3283f5d2303d/compras
+{"produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","quantidade":3,"precoUnitarioVisto":4.00}
+RESPONSE
+{"type":"SaldoInsuficienteException","title":"Requisição inválida","status":400,"detail":"Saldo insuficiente para concluir a compra."}
+HTTP_STATUS:400
+
+===== 10-saldo-apos-insuficiente =====
+REQUEST GET http://localhost:5080/api/cartoes/b383b865-6e74-4316-90d8-3283f5d2303d
+RESPONSE
+{"id":"b383b865-6e74-4316-90d8-3283f5d2303d","nomeTitular":"Saldo Curto","codigoAmigavel":"CP-NAWQ7Z","saldo":10.0,"dataCriacao":"2026-10-15T13:48:15.207328"}
+HTTP_STATUS:200
+
+===== 11-cartao-quantidade =====
+REQUEST POST http://localhost:5080/api/cartoes
+{"nomeTitular":"Quantidade"}
+RESPONSE
+{"id":"f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976","nomeTitular":"Quantidade","codigoAmigavel":"CP-UQLYEL","saldo":0,"dataCriacao":"2026-10-15T13:48:15.2781905Z"}
+HTTP_STATUS:201
+
+===== 12-recarga-20 =====
+REQUEST POST http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976/recargas
+{"valor":20,"descricao":"Recarga"}
+RESPONSE
+{"id":"f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976","nomeTitular":"Quantidade","codigoAmigavel":"CP-UQLYEL","saldo":20.0,"dataCriacao":"2026-10-15T13:48:15.2781905"}
+HTTP_STATUS:200
+
+===== 13-quantidade-0 =====
+REQUEST POST http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976/compras
+{"produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","quantidade":0,"precoUnitarioVisto":4.00}
+RESPONSE
+{"type":"QuantidadeInvalidaException","title":"Requisição inválida","status":400,"detail":"Informe uma quantidade inteira maior que zero."}
+HTTP_STATUS:400
+
+===== 14-quantidade-menos-1 =====
+REQUEST POST http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976/compras
+{"produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","quantidade":-1,"precoUnitarioVisto":4.00}
+RESPONSE
+{"type":"QuantidadeInvalidaException","title":"Requisição inválida","status":400,"detail":"Informe uma quantidade inteira maior que zero."}
+HTTP_STATUS:400
+
+===== 15-quantidade-1-5 =====
+REQUEST POST http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976/compras
+{"produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","quantidade":1.5,"precoUnitarioVisto":4.00}
+RESPONSE
+{"type":"QuantidadeInvalidaException","title":"Requisição inválida","status":400,"detail":"Informe uma quantidade inteira maior que zero."}
+HTTP_STATUS:400
+
+===== 16-saldo-apos-quantidade =====
+REQUEST GET http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976
+RESPONSE
+{"id":"f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976","nomeTitular":"Quantidade","codigoAmigavel":"CP-UQLYEL","saldo":20.0,"dataCriacao":"2026-10-15T13:48:15.2781905"}
+HTTP_STATUS:200
+
+===== 17-preco-diferente =====
+REQUEST POST http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976/compras
+{"produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","quantidade":1,"precoUnitarioVisto":3.00}
+RESPONSE
+{"type":"PrecoAlteradoException","title":"Conflito","status":409,"detail":"O preço deste produto mudou. Confirme novamente o total atualizado."}
+HTTP_STATUS:409
+
+===== 18-saldo-apos-409 =====
+REQUEST GET http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976
+RESPONSE
+{"id":"f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976","nomeTitular":"Quantidade","codigoAmigavel":"CP-UQLYEL","saldo":20.0,"dataCriacao":"2026-10-15T13:48:15.2781905"}
+HTTP_STATUS:200
+
+===== 19-compra-preco-vigente =====
+REQUEST POST http://localhost:5080/api/cartoes/f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976/compras
+{"produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","quantidade":1,"precoUnitarioVisto":4.00}
+RESPONSE
+{"cartaoId":"f8e1cff0-8d7e-4bc3-83a1-15ebe28e7976","saldo":16.0,"registro":{"id":"81c84df4-f3d0-44b5-b5f4-0a4601ebfe67","valor":4.0,"descricao":"Compra","dataHora":"2026-10-15T13:48:15.401508Z","produtoId":"9c4f5d0b-3f7d-4e4a-ab5c-4d5e6f708192","nomeProduto":"Adesivo CardPlay","quantidade":1,"precoUnitario":4.0}}
+HTTP_STATUS:200
+

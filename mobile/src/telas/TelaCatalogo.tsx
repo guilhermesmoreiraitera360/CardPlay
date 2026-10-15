@@ -69,12 +69,12 @@ export function TelaCatalogo() {
     };
   }, []);
 
-  async function aoConfirmar(produto: Produto) {
+  async function aoConfirmar(produto: Produto, quantidade: number) {
     setEnviandoId(produto.id);
     setMensagem(null);
     setErroCompra(null);
     try {
-      const compra = await comprar(produto.id);
+      const compra = await comprar(produto.id, quantidade, produto.preco);
       setMensagem(`Compra registrada. Saldo: ${formatarMoeda(compra.saldo)}`);
     } catch (falha) {
       setErroCompra(falha instanceof Error ? falha.message : 'Não foi possível concluir a compra.');
@@ -89,7 +89,7 @@ export function TelaCatalogo() {
       <Text style={estilos.titulo}>Catálogo</Text>
       <Text style={estilos.subtitulo}>
         {cartao
-          ? 'O preço de cada produto é o valor debitado do saldo ao confirmar.'
+          ? 'O total, preço vezes a quantidade, é o valor debitado do saldo ao confirmar.'
           : 'Solicite um cartão na primeira aba para comprar.'}
       </Text>
       {cartao ? <Text style={estilos.saldo}>Saldo atual: {formatarMoeda(cartao.saldo)}</Text> : null}
@@ -108,7 +108,7 @@ export function TelaCatalogo() {
               podeConfirmar={cartao !== null}
               enviando={enviandoId === produto.id}
               bloqueado={enviandoId !== null && enviandoId !== produto.id}
-              onConfirmar={(escolhido) => void aoConfirmar(escolhido)}
+              onConfirmar={(escolhido, quantidade) => void aoConfirmar(escolhido, quantidade)}
             />
           </View>
         ))}

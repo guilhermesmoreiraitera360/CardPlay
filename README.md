@@ -19,7 +19,7 @@ O prompt que originou este estado inicial está em [docs/exemplo-prompt-criacao.
 - Recarregar saldo (valor maior que zero)
 - Consultar o histórico de recargas e de compras
 - Ver produtos cadastrados por seed
-- Comprar um produto com o saldo, confirmando o nome e o preço. Sem cartão, o botão **Usar cartão** fica visível e desabilitado
+- Comprar um produto com o saldo, depois de escolher a quantidade. A confirmação mostra o produto, a quantidade, o preço unitário e o total. Sem cartão, o botão **Usar cartão** fica visível e desabilitado
 
 ## Arquitetura resumida
 
@@ -154,7 +154,7 @@ Regras completas: [docs/ui.md](docs/ui.md).
 dotnet test backend/CardPlay.sln
 ```
 
-Os testes cobrem criação válida de cartão, recarga inválida, atualização de saldo, registro da movimentação, compra que debita o preço, saldo igual ao preço e saldo insuficiente sem débito.
+Os testes cobrem criação válida de cartão, recarga inválida, atualização de saldo, registro da movimentação, compra que debita o total, saldo igual ao total e saldo insuficiente sem débito.
 
 ## Endpoints
 

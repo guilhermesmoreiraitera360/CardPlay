@@ -66,6 +66,7 @@ public class CartaoTestes
         Assert.Null(movimentacao.ProdutoId);
         Assert.Null(movimentacao.NomeProduto);
         Assert.Null(movimentacao.Quantidade);
+        Assert.Null(movimentacao.PrecoUnitario);
     }
 
     [Fact]
@@ -94,6 +95,7 @@ public class CartaoTestes
         Assert.Equal(produto.Id, compra.ProdutoId);
         Assert.Equal(produto.Nome, compra.NomeProduto);
         Assert.Equal(1, compra.Quantidade);
+        Assert.Equal(produto.Preco, compra.PrecoUnitario);
         Assert.Equal(produto.Preco, compra.Valor);
         Assert.Equal(cartao.Id, compra.CartaoId);
         Assert.Equal("Compra", compra.Descricao);
@@ -110,6 +112,7 @@ public class CartaoTestes
         var compra = cartao.Comprar(produto);
 
         Assert.Equal(0m, cartao.Saldo);
+        Assert.Equal(produto.Preco, compra.PrecoUnitario);
         Assert.Equal(produto.Preco, compra.Valor);
         Assert.Equal(1, compra.Quantidade);
         Assert.Equal(2, cartao.Movimentacoes.Count);
@@ -128,6 +131,82 @@ public class CartaoTestes
         var recarga = Assert.Single(cartao.Movimentacoes);
         Assert.Null(recarga.ProdutoId);
         Assert.Null(recarga.Quantidade);
+        Assert.Null(recarga.PrecoUnitario);
+    }
+
+    [Fact]
+    public void Comprar_Quantidade3_SaldoMaiorQueTotal_DebitaTotalERegistraUmaCompra()
+    {
+        var cartao = Cartao.Solicitar("Helena");
+        cartao.Recarregar(100m, "Recarga");
+        var produto = ProdutoDeTeste(20m);
+
+        var compra = cartao.Comprar(produto, 3m);
+
+        Assert.Equal(40m, cartao.Saldo);
+        Assert.Equal(2, cartao.Movimentacoes.Count);
+        Assert.Equal(3, compra.Quantidade);
+        Assert.Equal(20m, compra.PrecoUnitario);
+        Assert.Equal(60m, compra.Valor);
+        Assert.Equal(produto.Nome, compra.NomeProduto);
+    }
+
+    [Fact]
+    public void Comprar_Quantidade3_SaldoIgualAoTotal_ConcluiComSaldoZero()
+    {
+        var cartao = Cartao.Solicitar("Igor");
+        cartao.Recarregar(60m, "Recarga");
+        var produto = ProdutoDeTeste(20m);
+
+        var compra = cartao.Comprar(produto, 3m);
+
+        Assert.Equal(0m, cartao.Saldo);
+        Assert.Equal(3, compra.Quantidade);
+        Assert.Equal(60m, compra.Valor);
+    }
+
+    [Fact]
+    public void Comprar_Quantidade3_SaldoMenorQueTotal_NaoAlteraSaldoNemRegistraCompra()
+    {
+        var cartao = Cartao.Solicitar("Julia");
+        cartao.Recarregar(50m, "Recarga");
+        var produto = ProdutoDeTeste(20m);
+
+        Assert.Throws<SaldoInsuficienteException>(() => cartao.Comprar(produto, 3m));
+
+        Assert.Equal(50m, cartao.Saldo);
+        Assert.Null(Assert.Single(cartao.Movimentacoes).ProdutoId);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(1.5)]
+    public void Comprar_QuantidadeInvalida_NaoAlteraSaldoNemRegistraCompra(decimal quantidade)
+    {
+        var cartao = Cartao.Solicitar("Lia");
+        cartao.Recarregar(100m, "Recarga");
+        var produto = ProdutoDeTeste(20m);
+
+        var excecao = Assert.Throws<QuantidadeInvalidaException>(() => cartao.Comprar(produto, quantidade));
+
+        Assert.Equal("Informe uma quantidade inteira maior que zero.", excecao.Message);
+        Assert.Equal(100m, cartao.Saldo);
+        Assert.Null(Assert.Single(cartao.Movimentacoes).ProdutoId);
+    }
+
+    [Fact]
+    public void Comprar_TotalEstouraDecimal_NaoAlteraSaldoNemRegistraCompra()
+    {
+        var cartao = Cartao.Solicitar("Miguel");
+        cartao.Recarregar(100m, "Recarga");
+        var produto = ProdutoDeTeste(decimal.MaxValue);
+
+        var excecao = Assert.Throws<EstouroDeTotalException>(() => cartao.Comprar(produto, 2m));
+
+        Assert.Equal("Não foi possível calcular o total sem estouro numérico.", excecao.Message);
+        Assert.Equal(100m, cartao.Saldo);
+        Assert.Null(Assert.Single(cartao.Movimentacoes).ProdutoId);
     }
 
     private static Produto ProdutoDeTeste(decimal preco)

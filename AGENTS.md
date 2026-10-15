@@ -45,7 +45,7 @@ Não crie referências circulares. Domain não referencia ASP.NET, EF Core nem o
 
 ### Responsabilidades
 
-- **Domain:** entidades (`Cartao`, `MovimentacaoCartao`, `Produto`) e regras essenciais. Recarga com valor `<= 0` é inválida. A compra debita o preço e cria o registro juntos, ou rejeita saldo insuficiente antes de alterar os dois. A quantidade da compra é 1. O saldo e a movimentação nascem juntos no domínio.
+- **Domain:** entidades (`Cartao`, `MovimentacaoCartao`, `Produto`) e regras essenciais. Recarga com valor `<= 0` é inválida. A compra debita o total, preço unitário vezes a quantidade escolhida, e cria o registro juntos, ou rejeita saldo insuficiente antes de alterar os dois. A quantidade é um inteiro maior ou igual a 1. O registro guarda a quantidade, o preço unitário e o total. O saldo e a movimentação nascem juntos no domínio.
 - **Application:** DTOs, contratos, mapeamentos e **orquestração dos casos de uso**. Sem infraestrutura e sem clientes HTTP externos.
 - **Repository:** DbContext, EF Core, SQLite, migrations, seed de produtos, repositórios concretos.
 - **Services:** apenas clientes de APIs e serviços externos. Nesta versão não há integrações externas; não coloque casos de uso aqui.
@@ -68,7 +68,7 @@ Código em português (`Cartao`, `Produto`, `CartoesController`, `/api/cartoes`)
 - Datas em UTC.
 - Não armazene PAN, CVV, credenciais ou secrets.
 - Não implemente estoque, carrinho, checkout, autenticação ou integração bancária nesta versão.
-- O botão “Usar cartão” permanece visível. Com cartão no contexto, confirma a compra de uma unidade pelo preço do catálogo. Sem cartão, permanece desabilitado.
+- O botão “Usar cartão” permanece visível. Com cartão no contexto, a quantidade é escolhida no card e a confirmação mostra produto, quantidade, preço unitário e total. Sem cartão, permanece desabilitado.
 
 ## Persistência
 
@@ -87,7 +87,7 @@ Uma recarga e uma compra precisam persistir saldo e movimentação no mesmo `Sav
 - URL apenas em `mobile/src/config/ambiente.ts` (`EXPO_PUBLIC_API_URL`).
 - O id do cartão selecionado fica no AsyncStorage.
 - Cores só em `mobile/src/tema/cores.ts`. Azul = identidade e navegação. Laranja = saldo, preços, recarga e compra. Vermelho só para erro.
-- O histórico mostra a compra com nome do produto, quantidade e valor sem “+”. A recarga continua com a descrição e com “+”.
+- O histórico mostra a compra com nome do produto, quantidade, preço unitário e total sem “+”. A recarga continua com a descrição e com “+”.
 - A barra inferior precisa mostrar ícone e rótulo por completo, acima da área segura. Não reduza a altura se isso cortar o texto.
 - Conteúdo das telas respeita o recorte superior (`usePaddingTela`).
 - Catálogo: um produto por linha abaixo de 720px; duas colunas a partir disso.
@@ -116,8 +116,8 @@ Mínimo esperado:
 - recarga com valor `<= 0` rejeitada
 - saldo atualizado após recarga
 - movimentação correspondente registrada
-- compra com saldo suficiente debita o preço e registra produto, quantidade, valor e data
-- compra com saldo igual ao preço termina em zero
+- compra com saldo suficiente debita o total e registra produto, quantidade, preço unitário, total e data
+- compra com saldo igual ao total termina em zero
 - compra com saldo insuficiente não debita nem registra compra
 
 ## Validação

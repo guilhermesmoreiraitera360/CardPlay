@@ -54,12 +54,18 @@ public class CartoesController : ControllerBase
     [ProducesResponseType(typeof(CompraResposta), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CompraResposta>> Comprar(
         Guid id,
         [FromBody] CompraRequisicao requisicao,
         CancellationToken cancellationToken)
     {
-        var compra = await _compraServico.ComprarAsync(id, requisicao.ProdutoId, cancellationToken);
+        var compra = await _compraServico.ComprarAsync(
+            id,
+            requisicao.ProdutoId,
+            requisicao.Quantidade,
+            requisicao.PrecoUnitarioVisto,
+            cancellationToken);
         return Ok(compra);
     }
 

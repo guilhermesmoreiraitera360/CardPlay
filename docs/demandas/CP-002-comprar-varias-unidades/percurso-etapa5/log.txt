@@ -1,0 +1,13 @@
+Cartão CP-NRBG9K, id c214fd08-081c-4678-9eec-990439f25b14. Recarga R$ 100,00. Catálogo na web.
+
+Quantidade 3 no café. Aviso: “Confirmar a compra de Café especial, quantidade 3, preço unitário R$ 8,50, total R$ 25,50?”. Cancelar fechou o aviso, o saldo continuou R$ 100,00 e não houve POST /compras.
+
+Confirmar em seguida: POST /compras e GET /movimentacoes. Saldo no catálogo R$ 74,50. A frase “Compra registrada. Saldo: R$ 74,50” apareceu na mesma tela.
+
+Fone, quantidade 3. Aviso: “Confirmar a compra de Fone compacto, quantidade 3, preço unitário R$ 79,00, total R$ 237,00?”. Confirmar mostrou “Saldo insuficiente para concluir a compra.”. O saldo continuou R$ 74,50. Houve POST /compras e não houve GET /movimentacoes.
+
+Adesivo, quantidade 1. Aviso: “Confirmar a compra de Adesivo CardPlay, quantidade 1, preço unitário R$ 4,00, total R$ 4,00?”. Confirmar deixou o saldo em R$ 70,50, ainda no catálogo.
+
+O controle de diminuir no adesivo, já em 1, manteve a quantidade em 1.
+
+GET /movimentacoes depois do percurso: recarga R$ 100,00; café quantidade 3, preço unitário 8,5, valor 25,5; adesivo quantidade 1, preço unitário 4,0, valor 4,0. Sem compra do fone.

@@ -27,7 +27,8 @@ public static class MapeadorCartao
             DataHora = movimentacao.DataHora,
             ProdutoId = movimentacao.ProdutoId,
             NomeProduto = movimentacao.NomeProduto,
-            Quantidade = movimentacao.Quantidade
+            Quantidade = movimentacao.Quantidade,
+            PrecoUnitario = movimentacao.PrecoUnitario
         };
     }
 }
