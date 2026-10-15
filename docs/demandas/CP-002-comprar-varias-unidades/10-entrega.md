@@ -9,7 +9,7 @@
 | Fontes | `02-historia-rica.md`, `03-criterios-de-aceite.md`, `06-plan.md`, `07-decisoes.md`, `07-execucao.md`, `08-validacao.md`, `09-review-e-testes.md`, pasta `evidencias/` |
 | Código comparado | Branch `docs/cp-002-comprar-varias-unidades`, a partir do commit `19a90b1`. A CP-002 está no diretório de trabalho e não tem commit |
 | Data da leitura | 2026-10-15 |
-| Situação | **Não concluída.** RN01–RN04 e CA01–CA05 estão aprovadas. Os pares de R$ 20,00 foram aceitos como exemplo. O caminho principal, o saldo zero na tela, o 409 na tela e a falha de gravação relida no SQLite têm artefato. Ficam abertos o alerta nativo, o HTTP de estouro e o log SQL |
+| Situação | **Concluída** em 2026-10-15. RN01–RN04 e CA01–CA05 estão aprovadas. Os pares de R$ 20,00 foram aceitos como exemplo. O alerta nativo, o HTTP de estouro, o log SQL, a segunda confirmação na tela depois do 409 e a chamada HTTP 500 da falha de gravação ficam como limites aceitos, sem artefato novo |
 
 `08-validacao.md` e `09-review-e-testes.md` registram o inventário anterior. Onde eles dizem que um item não foi observado, a pasta `evidencias/` prevalece para o que ela de fato contém. “Observado” aqui aponta para arquivo desta demanda.
 
@@ -73,9 +73,15 @@ Tudo abaixo está sem commit, na branch `docs/cp-002-comprar-varias-unidades`.
 
 ---
 
-## Ainda aberto
+## Aceito na conclusão
 
-O alerta nativo do telefone, o HTTP de estouro e o log SQL com `BEGIN` continuam sem artefato. A confirmação seguinte na tela, depois do 409, também. A resposta HTTP 500 da falha de gravação continua só no mapeamento do `TratadorExcecoes`.
+Em 2026-10-15 a entrega foi dada como concluída. Estes pontos permanecem sem artefato novo e foram aceitos assim:
+
+- O alerta nativo do telefone. A web tem o modal.
+- O HTTP de estouro. O teste em memória cobre a regra, e um preço da precisão 18,2 não estoura `decimal`.
+- O log SQL com `BEGIN`.
+- A confirmação seguinte na tela, depois do 409. A API já fez essa segunda compra.
+- A chamada HTTP 500 de “A compra não foi concluída.” O teste que relê o SQLite cobre a falha de gravação.
 
 `docs/backlog.md` agora descreve a quantidade escolhida. O título do arquivo continua a regra das demandas futuras: não implementar até serem pedidas com critérios claros.
 

@@ -63,3 +63,4 @@ O teste faz `SalvarAlteracoesAsync` falhar. Não há interruptor no produto. A e
 | --- | --- |
 | Aprovar RN01–RN04 e CA01–CA05 como o texto oficial da história | Aprovadas em 2026-10-15. O enunciado permanece o de `02-historia-rica.md` e `03-criterios-de-aceite.md` |
 | Pares escritos R$ 100,00 / R$ 20,00 × 3, saldo R$ 60,00 e saldo R$ 50,00 | Aceitos como exemplo da regra. O seed não tem produto a R$ 20,00. Café a R$ 8,50 e adesivo a R$ 4,00 fecham o mesmo critério |
+| Concluir a entrega | Concluída em 2026-10-15. Alerta nativo, HTTP de estouro, log SQL, segunda confirmação na tela depois do 409 e chamada HTTP 500 da falha de gravação ficam aceitos sem artefato novo |
