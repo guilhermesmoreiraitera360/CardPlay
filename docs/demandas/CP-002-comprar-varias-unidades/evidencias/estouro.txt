@@ -1,0 +1,5 @@
+Estouro do total, conferido em 2026-10-15.
+
+O teste de domínio Comprar_TotalEstouraDecimal_NaoAlteraSaldoNemRegistraCompra passou na suíte gravada em evidencias/dotnet-test.txt. Ele multiplica decimal.MaxValue por 2 em memória e espera EstouroDeTotalException, sem alterar saldo nem gravar compra.
+
+Não há chamada HTTP de estouro. Produto.Preco está mapeado com precisão 18 e escala 2. O maior preço que cabe nessa precisão é 9999999999999999.99. Vezes a maior quantidade inteira aceita, 2147483647, o total é 21474836469999999978525163.53. decimal.MaxValue é 79228162514264337593543950335. O produto cabe no decimal, com folga de cerca de 3689 vezes. Um preço de catálogo que a coluna aceita não produz o HTTP 400 de estouro. Não foi inserido preço fora dessa precisão para forçar a resposta.

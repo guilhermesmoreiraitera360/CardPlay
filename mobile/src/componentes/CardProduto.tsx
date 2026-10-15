@@ -10,7 +10,7 @@ type Propriedades = {
   podeConfirmar?: boolean;
   enviando?: boolean;
   bloqueado?: boolean;
-  onConfirmar?: (produto: Produto) => void;
+  onConfirmar?: (produto: Produto, quantidade: number) => void;
 };
 
 export function CardProduto({
@@ -24,7 +24,13 @@ export function CardProduto({
   const lista = layout === 'lista';
   const habilitado = podeConfirmar && !enviando && !bloqueado && onConfirmar !== undefined;
   const [confirmando, setConfirmando] = useState(false);
-  const mensagem = `Confirmar a compra de ${produto.nome} por ${formatarMoeda(produto.preco)}?`;
+  const [quantidade, setQuantidade] = useState(1);
+  const total = produto.preco * quantidade;
+  const mensagem = `Confirmar a compra de ${produto.nome}, quantidade ${quantidade}, preço unitário ${formatarMoeda(produto.preco)}, total ${formatarMoeda(total)}?`;
+
+  function alterarQuantidade(delta: number) {
+    setQuantidade((atual) => Math.max(1, atual + delta));
+  }
 
   function pedirConfirmacao() {
     if (!onConfirmar) {
@@ -38,7 +44,7 @@ export function CardProduto({
 
     Alert.alert('Usar cartão', mensagem, [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Confirmar', onPress: () => onConfirmar(produto) },
+      { text: 'Confirmar', onPress: () => onConfirmar(produto, quantidade) },
     ]);
   }
 
@@ -48,7 +54,7 @@ export function CardProduto({
 
   function confirmar() {
     setConfirmando(false);
-    onConfirmar?.(produto);
+    onConfirmar?.(produto, quantidade);
   }
 
   return (
@@ -58,6 +64,27 @@ export function CardProduto({
         <Text style={estilos.nome}>{produto.nome}</Text>
         <Text style={[estilos.descricao, lista && estilos.descricaoLista]}>{produto.descricaoCurta}</Text>
         <Text style={estilos.preco}>{formatarMoeda(produto.preco)}</Text>
+        <View style={estilos.quantidade}>
+          <Pressable
+            accessibilityLabel={`Diminuir quantidade de ${produto.nome}`}
+            disabled={!habilitado || quantidade <= 1}
+            onPress={() => alterarQuantidade(-1)}
+            style={[estilos.quantidadePasso, (!habilitado || quantidade <= 1) && estilos.quantidadePassoDesabilitado]}
+          >
+            <Text style={estilos.quantidadePassoTexto}>−</Text>
+          </Pressable>
+          <Text style={estilos.quantidadeValor} accessibilityLabel={`Quantidade de ${produto.nome}`}>
+            {quantidade}
+          </Text>
+          <Pressable
+            accessibilityLabel={`Aumentar quantidade de ${produto.nome}`}
+            disabled={!habilitado}
+            onPress={() => alterarQuantidade(1)}
+            style={[estilos.quantidadePasso, !habilitado && estilos.quantidadePassoDesabilitado]}
+          >
+            <Text style={estilos.quantidadePassoTexto}>+</Text>
+          </Pressable>
+        </View>
         <Pressable
           disabled={!habilitado}
           onPress={pedirConfirmacao}
@@ -97,7 +124,7 @@ const estilos = StyleSheet.create({
     borderRadius: 24,
     padding: 16,
     margin: 6,
-    minHeight: 230,
+    minHeight: 280,
     borderWidth: 1,
     borderColor: cores.linha,
   },
@@ -140,6 +167,38 @@ const estilos = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: cores.laranja,
+  },
+  quantidade: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 8,
+  },
+  quantidadePasso: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: cores.laranja,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quantidadePassoDesabilitado: {
+    opacity: 0.4,
+  },
+  quantidadePassoTexto: {
+    color: cores.laranja,
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+  quantidadeValor: {
+    minWidth: 24,
+    textAlign: 'center',
+    color: cores.laranja,
+    fontSize: 16,
+    fontWeight: '700',
   },
   botao: {
     marginTop: 14,

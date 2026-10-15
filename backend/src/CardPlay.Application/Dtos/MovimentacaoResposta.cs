@@ -9,4 +9,5 @@ public class MovimentacaoResposta
     public Guid? ProdutoId { get; init; }
     public string? NomeProduto { get; init; }
     public int? Quantidade { get; init; }
+    public decimal? PrecoUnitario { get; init; }
 }

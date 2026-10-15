@@ -34,5 +34,10 @@ public class MovimentacaoCartaoConfiguracao : IEntityTypeConfiguration<Movimenta
 
         builder.Property(movimentacao => movimentacao.Quantidade)
             .IsRequired(false);
+
+        builder.Property(movimentacao => movimentacao.PrecoUnitario)
+            .HasColumnType("TEXT")
+            .HasPrecision(18, 2)
+            .IsRequired(false);
     }
 }

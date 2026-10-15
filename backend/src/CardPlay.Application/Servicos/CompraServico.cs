@@ -20,6 +20,8 @@ public class CompraServico : ICompraServico
     public async Task<CompraResposta> ComprarAsync(
         Guid cartaoId,
         Guid produtoId,
+        decimal quantidade,
+        decimal precoUnitarioVisto,
         CancellationToken cancellationToken = default)
     {
         var cartao = await _cartaoRepositorio.ObterPorIdAsync(cartaoId, cancellationToken);
@@ -34,9 +36,22 @@ public class CompraServico : ICompraServico
             throw new ProdutoNaoEncontradoException(produtoId);
         }
 
-        var movimentacao = cartao.Comprar(produto);
+        if (precoUnitarioVisto != produto.Preco)
+        {
+            throw new PrecoAlteradoException();
+        }
+
+        var movimentacao = cartao.Comprar(produto, quantidade);
         _cartaoRepositorio.AdicionarMovimentacao(movimentacao);
-        await _cartaoRepositorio.SalvarAlteracoesAsync(cancellationToken);
+        try
+        {
+            await _cartaoRepositorio.SalvarAlteracoesAsync(cancellationToken);
+        }
+        catch (Exception excecao) when (excecao is not OperationCanceledException)
+        {
+            throw new CompraNaoConcluidaException(excecao);
+        }
+
         return new CompraResposta
         {
             CartaoId = cartao.Id,

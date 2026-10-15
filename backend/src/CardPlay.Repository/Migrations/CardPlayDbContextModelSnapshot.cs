@@ -64,6 +64,10 @@ namespace CardPlay.Repository.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal?>("PrecoUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid?>("ProdutoId")
                         .HasColumnType("TEXT");
 

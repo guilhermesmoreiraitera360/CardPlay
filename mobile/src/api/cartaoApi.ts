@@ -14,8 +14,12 @@ export const cartaoApi = {
     return clienteHttp.post<Cartao>(`/api/cartoes/${id}/recargas`, { valor, descricao });
   },
 
-  comprar(id: string, produtoId: string): Promise<Compra> {
-    return clienteHttp.post<Compra>(`/api/cartoes/${id}/compras`, { produtoId });
+  comprar(id: string, produtoId: string, quantidade: number, precoUnitarioVisto: number): Promise<Compra> {
+    return clienteHttp.post<Compra>(`/api/cartoes/${id}/compras`, {
+      produtoId,
+      quantidade,
+      precoUnitarioVisto,
+    });
   },
 
   listarMovimentacoes(id: string): Promise<Movimentacao[]> {

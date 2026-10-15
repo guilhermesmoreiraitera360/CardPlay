@@ -11,7 +11,7 @@ type CartaoContextoValor = {
   erro: string | null;
   solicitar: (nomeTitular: string) => Promise<void>;
   recarregar: (valor: number, descricao?: string) => Promise<void>;
-  comprar: (produtoId: string) => Promise<Compra>;
+  comprar: (produtoId: string, quantidade: number, precoUnitarioVisto: number) => Promise<Compra>;
   atualizar: () => Promise<void>;
 };
 
@@ -95,13 +95,13 @@ export function CartaoProvider({ children }: { children: ReactNode }) {
     setMovimentacoes(historico);
   }, [cartao]);
 
-  const comprar = useCallback(async (produtoId: string) => {
+  const comprar = useCallback(async (produtoId: string, quantidade: number, precoUnitarioVisto: number) => {
     if (!cartao) {
       throw new Error('Solicite um cartão antes de comprar.');
     }
 
     setErro(null);
-    const compra = await cartaoApi.comprar(cartao.id, produtoId);
+    const compra = await cartaoApi.comprar(cartao.id, produtoId, quantidade, precoUnitarioVisto);
     const historico = await cartaoApi.listarMovimentacoes(cartao.id);
     setCartao({ ...cartao, saldo: compra.saldo });
     setMovimentacoes(historico);

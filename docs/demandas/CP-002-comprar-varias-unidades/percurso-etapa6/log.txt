@@ -1,0 +1,5 @@
+Cartão CP-NRBG9K, saldo R$ 70,50, aba Histórico na web.
+
+Café especial: R$ 25,50 sem “+”, quantidade 3, preço unitário R$ 8,50, 15/10/2026, 14:02.
+Adesivo CardPlay: R$ 4,00 sem “+”, quantidade 1, preço unitário R$ 4,00, mesma data.
+Recarga: descrição “Recarga”, “+ R$ 100,00”, 15/10/2026, 14:00. Sem quantidade nem preço unitário.

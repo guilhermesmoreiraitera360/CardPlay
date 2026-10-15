@@ -14,6 +14,7 @@ export type Movimentacao = {
   produtoId?: string | null;
   nomeProduto?: string | null;
   quantidade?: number | null;
+  precoUnitario?: number | null;
 };
 
 export type Compra = {

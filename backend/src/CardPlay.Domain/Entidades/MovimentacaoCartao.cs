@@ -24,6 +24,7 @@ public class MovimentacaoCartao
     public Guid? ProdutoId { get; private set; }
     public string? NomeProduto { get; private set; }
     public int? Quantidade { get; private set; }
+    public decimal? PrecoUnitario { get; private set; }
 
     internal static MovimentacaoCartao Criar(Guid cartaoId, decimal valor, string descricao)
     {
@@ -34,13 +35,16 @@ public class MovimentacaoCartao
         Guid cartaoId,
         Guid produtoId,
         string nomeProduto,
-        decimal valor)
+        decimal precoUnitario,
+        int quantidade,
+        decimal total)
     {
-        var compra = new MovimentacaoCartao(cartaoId, valor, "Compra")
+        var compra = new MovimentacaoCartao(cartaoId, total, "Compra")
         {
             ProdutoId = produtoId,
             NomeProduto = nomeProduto,
-            Quantidade = 1
+            Quantidade = quantidade,
+            PrecoUnitario = precoUnitario
         };
         return compra;
     }

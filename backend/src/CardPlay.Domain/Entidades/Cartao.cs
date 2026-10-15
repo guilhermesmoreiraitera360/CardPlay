@@ -53,15 +53,44 @@ public class Cartao
 
     public MovimentacaoCartao Comprar(Produto produto)
     {
+        return Comprar(produto, 1m);
+    }
+
+    public MovimentacaoCartao Comprar(Produto produto, decimal quantidadeInformada)
+    {
         ArgumentNullException.ThrowIfNull(produto);
 
-        if (Saldo < produto.Preco)
+        if (quantidadeInformada != decimal.Truncate(quantidadeInformada)
+            || quantidadeInformada < 1m
+            || quantidadeInformada > int.MaxValue)
+        {
+            throw new QuantidadeInvalidaException();
+        }
+
+        var quantidade = (int)quantidadeInformada;
+        decimal total;
+        try
+        {
+            total = produto.Preco * quantidade;
+        }
+        catch (OverflowException)
+        {
+            throw new EstouroDeTotalException();
+        }
+
+        if (Saldo < total)
         {
             throw new SaldoInsuficienteException();
         }
 
-        Saldo -= produto.Preco;
-        var movimentacao = MovimentacaoCartao.CriarCompra(Id, produto.Id, produto.Nome, produto.Preco);
+        Saldo -= total;
+        var movimentacao = MovimentacaoCartao.CriarCompra(
+            Id,
+            produto.Id,
+            produto.Nome,
+            produto.Preco,
+            quantidade,
+            total);
         _movimentacoes.Add(movimentacao);
         return movimentacao;
     }

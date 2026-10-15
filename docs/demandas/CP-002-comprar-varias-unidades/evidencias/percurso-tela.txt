@@ -1,0 +1,26 @@
+Percurso na web em http://localhost:8081, em 2026-10-15.
+Fuso do navegador, lido com Intl.DateTimeFormat().resolvedOptions().timeZone: America/Sao_Paulo.
+API em http://localhost:5080.
+
+Cartão criado na tela: CP-4YC229, id ea580040-0f39-4323-bf30-cb436e1d55e9, titular "Evidencia Saldo".
+
+Saldo igual ao total
+- Recarga de R$ 12,00. A tela mostrou saldo R$ 12,00.
+- Catálogo, Adesivo CardPlay, quantidade 3. O aviso mostrou: "Confirmar a compra de Adesivo CardPlay, quantidade 3, preço unitário R$ 4,00, total R$ 12,00?". Captura: 01-alerta-adesivo-total-12.png.
+- Confirmar. O catálogo permaneceu aberto, com "Saldo atual: R$ 0,00" e "Compra registrada. Saldo: R$ 0,00". Captura: 02-saldo-zero-catalogo.png.
+- GET /api/cartoes/ea580040-0f39-4323-bf30-cb436e1d55e9 devolveu saldo 0.0.
+- Histórico: "Adesivo CardPlay", "R$ 12,00" sem "+", "Quantidade 3", "Preço unitário R$ 4,00", "15/10/2026, 17:47". Recarga abaixo: "Recarga", "+ R$ 12,00", "15/10/2026, 17:46". Captura: 03-historico-saldo-zero.png.
+- GET /api/cartoes/ea580040-0f39-4323-bf30-cb436e1d55e9/movimentacoes:
+  compra dataHora 2026-10-15T17:47:06.6998748, valor 12.0, quantidade 3, precoUnitario 4.0
+  recarga dataHora 2026-10-15T17:46:18.1234123, valor 12.0, precoUnitario null
+- O relógio da tela repete os dígitos do JSON (17:47 e 17:46). O arquivo 01-alerta-adesivo-total-12.png foi gravado às 14:47 no relógio local do computador. O fuso do navegador era America/Sao_Paulo.
+
+Preço visto diferente do vigente
+- Nova recarga de R$ 20,00. A tela mostrou saldo R$ 20,00.
+- Com o catálogo já carregado em R$ 4,00, o preço do adesivo no SQLite foi alterado para 5.0. GET /api/produtos passou a devolver Adesivo CardPlay a 5.0. O card na tela continuou em R$ 4,00.
+- Aviso: "Confirmar a compra de Adesivo CardPlay, quantidade 1, preço unitário R$ 4,00, total R$ 4,00?". Captura: 04-alerta-preco-visto-4.png.
+- Confirmar. O catálogo mostrou "O preço deste produto mudou. Confirme novamente o total atualizado." e "Saldo atual: R$ 20,00". Captura: 05-conflito-preco-catalogo.png.
+- GET do cartão depois disso: saldo 20.0. As movimentações continuaram sendo a recarga de 20, a compra de 12 e a recarga de 12. Não entrou compra nova.
+- O preço do adesivo foi devolvido para 4.0. GET /api/produtos voltou a devolver 4.0. Não houve uma segunda confirmação na tela com o preço novo.
+
+O alerta nativo do telefone não foi capturado. Não há emulador nem adb neste ambiente. O aviso acima é o modal da web.

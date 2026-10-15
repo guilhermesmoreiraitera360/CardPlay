@@ -49,6 +49,11 @@ export function TelaMovimentacoes() {
               {compra ? (
                 <Text style={estilos.quantidade}>Quantidade {movimentacao.quantidade}</Text>
               ) : null}
+              {compra && movimentacao.precoUnitario != null ? (
+                <Text style={estilos.quantidade}>
+                  Preço unitário {formatarMoeda(movimentacao.precoUnitario)}
+                </Text>
+              ) : null}
               <Text style={estilos.data}>{formatarDataHora(movimentacao.dataHora)}</Text>
             </View>
           );
