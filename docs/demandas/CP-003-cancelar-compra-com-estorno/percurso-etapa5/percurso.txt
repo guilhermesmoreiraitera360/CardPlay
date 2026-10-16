@@ -1,0 +1,38 @@
+Percurso da etapa 5 — confirmação no Histórico (web)
+Data: 2026-10-16
+Navegador: Expo web em http://localhost:8081
+API: http://localhost:5080
+Fuso do navegador: America/Sao_Paulo (offset 180). Horários da tela estão nesse fuso. A API guarda UTC.
+
+Cartão novo, sem reutilizar o cartão da etapa 4.
+Id: d0034633-e512-431d-976c-c1bf86eb8351
+Código: CP-2QZ4PQ
+Titular: Etapa Cinco
+
+1. Recarga de R$ 20,00. Saldo na tela e na API: 20.
+2. Compra de Adesivo CardPlay, quantidade 3, preço unitário R$ 4,00, total R$ 12,00.
+   Compra id 655bd520-7a5e-4e1c-9496-02e06634d6c0.
+   Saldo depois da compra: 8.
+3. Preço do adesivo no catálogo da API alterado para 5.0 depois da compra já gravada.
+   GET /api/produtos devolveu [5.0] enquanto a compra permanecia com preço unitário 4.0 e valor 12.0.
+   O catálogo já aberto na tela não buscou a lista de novo e continuou mostrando R$ 4,00.
+4. Histórico: compra sem “+”, quantidade 3, preço unitário R$ 4,00, botão “Cancelar compra”.
+5. Abriu o aviso. Texto:
+   Confirmar o cancelamento de Adesivo CardPlay, quantidade 3, preço unitário R$ 4,00, total pago R$ 12,00, estorno R$ 12,00?
+   Captura: 02-confirmacao-web.png
+6. “Cancelar” no aviso. O diálogo fechou. Não apareceu “Cancelada” nem “Estorno”.
+   GET do cartão: saldo 8.0. GET das movimentações: duas linhas (compra e recarga), dataCancelamento nula, sem compraId.
+7. Abriu de novo e confirmou. A tela permaneceu no Histórico.
+   Estorno: título “Adesivo CardPlay”, linha “Estorno”, “+ R$ 12,00”.
+   Compra original: sem “+”, quantidade 3, preço unitário R$ 4,00, linha “Cancelada”, sem botão.
+   Recarga: “+ R$ 20,00”.
+   Captura: 03-historico-apos-estorno.png
+   O botão “Cancelar compra de Adesivo CardPlay” não estava mais no documento. A repetição 409 não foi clicável nesta tela; o 409 já está em percurso-etapa4/chamadas.txt.
+8. Aba Cartão: saldo R$ 20,00. Captura: 04-saldo-cartao.png
+   GET do cartão: saldo 20.0. Três movimentações:
+   - estorno id 1e319da5-636d-4e0d-95f0-e441d48e20ca, valor 12.0, descricao Estorno, nomeProduto nulo, compraId da compra
+   - compra com dataCancelamento 2026-10-16T13:04:05.0435368
+   - recarga 20.0
+9. Preço do adesivo restaurado para 4.0. GET /api/produtos devolveu [4.0].
+
+Alert nativo não foi capturado. Este percurso é só o modal da web.

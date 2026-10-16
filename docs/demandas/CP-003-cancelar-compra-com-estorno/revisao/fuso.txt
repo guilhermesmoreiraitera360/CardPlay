@@ -1,0 +1,8 @@
+Fuso do navegador: America/Sao_Paulo, offset 180.
+Cartão CP-PZ9LHC, id 3a730f80-23dd-4eba-ae35-1cc8db684ce7.
+
+A API devolveu dataHora 2026-10-16T17:27:54.123683Z no estorno.
+A tela mostrou 16/10/2026, 14:27. 17:27 UTC menos três horas é 14:27.
+
+Captura: historico-hora-local.png
+Corpo HTTP: chamadas.txt, chamada 14-movimentacoes-depois-da-repeticao.

@@ -55,13 +55,75 @@ public class FalhaGravacaoSqliteTestes
         }
         finally
         {
-            foreach (var sufixo in new[] { "", "-wal", "-shm" })
+            Apagar(caminho);
+        }
+    }
+
+    [Fact]
+    public async Task CancelarAsync_FalhaAoSalvar_RelendoSqlite_MantemSaldoSemMarcaESemEstorno()
+    {
+        var caminho = Path.Combine(Path.GetTempPath(), $"cardplay-ace09-{Guid.NewGuid():N}.db");
+        var opcoes = new DbContextOptionsBuilder<CardPlayDbContext>()
+            .UseSqlite($"Data Source={caminho}")
+            .Options;
+
+        Guid cartaoId;
+        Guid compraId;
+        try
+        {
+            await using (var preparo = new CardPlayDbContext(opcoes))
             {
-                var arquivo = caminho + sufixo;
-                if (File.Exists(arquivo))
-                {
-                    File.Delete(arquivo);
-                }
+                await preparo.Database.MigrateAsync();
+                var cartao = Cartao.Solicitar("Falha Gravacao");
+                cartao.Recarregar(100m, "Recarga");
+                preparo.Cartoes.Add(cartao);
+                await preparo.SaveChangesAsync();
+                cartaoId = cartao.Id;
+
+                var servico = new CompraServico(
+                    new CartaoRepositorio(preparo),
+                    new ProdutoRepositorio(preparo));
+                var compra = await servico.ComprarAsync(cartaoId, AdesivoId, 1m, 4m);
+                compraId = compra.Registro.Id;
+            }
+
+            await using (var cancelamento = new CardPlayDbContext(opcoes))
+            {
+                var servico = new CompraServico(
+                    new RepositorioQueFalhaAoSalvar(new CartaoRepositorio(cancelamento)),
+                    new ProdutoRepositorio(cancelamento));
+
+                var excecao = await Assert.ThrowsAsync<CancelamentoNaoConcluidoException>(() =>
+                    servico.CancelarAsync(cartaoId, compraId));
+
+                Assert.Equal("O cancelamento não foi concluído.", excecao.Message);
+                Assert.IsType<IOException>(excecao.InnerException);
+            }
+
+            await using var leitura = new CardPlayDbContext(opcoes);
+            var gravado = await leitura.Cartoes
+                .Include(cartao => cartao.Movimentacoes)
+                .SingleAsync(cartao => cartao.Id == cartaoId);
+
+            Assert.Equal(96m, gravado.Saldo);
+            var compraGravada = Assert.Single(gravado.Movimentacoes, movimentacao => movimentacao.ProdutoId != null);
+            Assert.Null(compraGravada.DataCancelamento);
+            Assert.DoesNotContain(gravado.Movimentacoes, movimentacao => movimentacao.CompraId != null);
+        }
+        finally
+        {
+            Apagar(caminho);
+        }
+    }
+
+    private static void Apagar(string caminho)
+    {
+        foreach (var sufixo in new[] { "", "-wal", "-shm" })
+        {
+            var arquivo = caminho + sufixo;
+            if (File.Exists(arquivo))
+            {
+                File.Delete(arquivo);
             }
         }
     }

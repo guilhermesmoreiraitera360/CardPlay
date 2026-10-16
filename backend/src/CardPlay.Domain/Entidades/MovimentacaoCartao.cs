@@ -25,6 +25,8 @@ public class MovimentacaoCartao
     public string? NomeProduto { get; private set; }
     public int? Quantidade { get; private set; }
     public decimal? PrecoUnitario { get; private set; }
+    public DateTime? DataCancelamento { get; private set; }
+    public Guid? CompraId { get; private set; }
 
     internal static MovimentacaoCartao Criar(Guid cartaoId, decimal valor, string descricao)
     {
@@ -47,5 +49,18 @@ public class MovimentacaoCartao
             PrecoUnitario = precoUnitario
         };
         return compra;
+    }
+
+    internal static MovimentacaoCartao CriarEstorno(Guid cartaoId, Guid compraId, decimal valor)
+    {
+        return new MovimentacaoCartao(cartaoId, valor, "Estorno")
+        {
+            CompraId = compraId
+        };
+    }
+
+    internal void MarcarCancelada(DateTime dataCancelamento)
+    {
+        DataCancelamento = dataCancelamento;
     }
 }

@@ -95,6 +95,26 @@ public class Cartao
         return movimentacao;
     }
 
+    public MovimentacaoCartao CancelarCompra(Guid compraId)
+    {
+        var compra = _movimentacoes.FirstOrDefault(movimentacao => movimentacao.Id == compraId);
+        if (compra is null || compra.ProdutoId is null)
+        {
+            throw new CompraNaoCancelavelException();
+        }
+
+        if (compra.DataCancelamento is not null)
+        {
+            throw new CompraJaCanceladaException();
+        }
+
+        compra.MarcarCancelada(DateTime.UtcNow);
+        Saldo += compra.Valor;
+        var estorno = MovimentacaoCartao.CriarEstorno(Id, compra.Id, compra.Valor);
+        _movimentacoes.Add(estorno);
+        return estorno;
+    }
+
     private static string GerarCodigoAmigavel()
     {
         const string alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

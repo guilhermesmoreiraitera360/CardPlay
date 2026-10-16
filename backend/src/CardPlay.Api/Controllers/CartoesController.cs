@@ -69,6 +69,19 @@ public class CartoesController : ControllerBase
         return Ok(compra);
     }
 
+    [HttpPost("{id:guid}/compras/{compraId:guid}/cancelamento")]
+    [ProducesResponseType(typeof(CompraResposta), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<CompraResposta>> Cancelar(
+        Guid id,
+        Guid compraId,
+        CancellationToken cancellationToken)
+    {
+        var cancelamento = await _compraServico.CancelarAsync(id, compraId, cancellationToken);
+        return Ok(cancelamento);
+    }
+
     [HttpGet("{id:guid}/movimentacoes")]
     [ProducesResponseType(typeof(IReadOnlyCollection<MovimentacaoResposta>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

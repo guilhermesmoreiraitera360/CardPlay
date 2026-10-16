@@ -13,7 +13,7 @@ public static class MapeadorCartao
             NomeTitular = cartao.NomeTitular,
             CodigoAmigavel = cartao.CodigoAmigavel,
             Saldo = cartao.Saldo,
-            DataCriacao = cartao.DataCriacao
+            DataCriacao = ComoUtc(cartao.DataCriacao)
         };
     }
 
@@ -24,11 +24,23 @@ public static class MapeadorCartao
             Id = movimentacao.Id,
             Valor = movimentacao.Valor,
             Descricao = movimentacao.Descricao,
-            DataHora = movimentacao.DataHora,
+            DataHora = ComoUtc(movimentacao.DataHora),
             ProdutoId = movimentacao.ProdutoId,
             NomeProduto = movimentacao.NomeProduto,
             Quantidade = movimentacao.Quantidade,
-            PrecoUnitario = movimentacao.PrecoUnitario
+            PrecoUnitario = movimentacao.PrecoUnitario,
+            DataCancelamento = ComoUtc(movimentacao.DataCancelamento),
+            CompraId = movimentacao.CompraId
         };
+    }
+
+    private static DateTime ComoUtc(DateTime data)
+    {
+        return data.Kind == DateTimeKind.Utc ? data : DateTime.SpecifyKind(data, DateTimeKind.Utc);
+    }
+
+    private static DateTime? ComoUtc(DateTime? data)
+    {
+        return data is null ? null : ComoUtc(data.Value);
     }
 }

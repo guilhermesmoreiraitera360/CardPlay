@@ -39,5 +39,11 @@ public class MovimentacaoCartaoConfiguracao : IEntityTypeConfiguration<Movimenta
             .HasColumnType("TEXT")
             .HasPrecision(18, 2)
             .IsRequired(false);
+
+        builder.Property(movimentacao => movimentacao.DataCancelamento)
+            .IsRequired(false);
+
+        builder.Property(movimentacao => movimentacao.CompraId)
+            .IsRequired(false);
     }
 }

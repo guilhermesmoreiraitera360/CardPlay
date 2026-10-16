@@ -75,12 +75,12 @@ Sem essa regra, a camada Services vira um segundo Application e a dependência c
 ## Modelo
 
 - **Cartao:** id, nome do titular, código amigável (`CP-XXXXXX`), saldo (`decimal`) e data de criação.
-- **MovimentacaoCartao:** valor, descrição e data/hora. A compra também guarda o id do produto, o nome, a quantidade e o preço unitário. O valor da compra é o total debitado. A recarga deixa esses campos da compra vazios.
+- **MovimentacaoCartao:** valor, descrição e data/hora. A compra também guarda o id do produto, o nome, a quantidade e o preço unitário. O valor da compra é o total debitado. A data de cancelamento, vazia quando a compra segue válida, marca o cancelamento sem apagar o registro. O estorno é outra movimentação, com a descrição “Estorno” e o id da compra. A recarga deixa esses campos da compra vazios.
 - **Produto:** nome, descrição curta, preço, ícone/emoji e disponibilidade. Os registros iniciais vêm de seed, não de uma tela admin.
 
 A recarga é um método do domínio. Se o valor for menor ou igual a zero, o domínio rejeita. Caso contrário, soma o saldo e cria a movimentação. O repositório grava os dois no mesmo `SaveChanges`.
 
-A compra é outro método do domínio. A quantidade é um inteiro maior ou igual a 1. O total é o preço unitário vezes essa quantidade. Se o saldo for menor que o total, rejeita antes de alterar o cartão. Caso contrário, debita o total e cria a movimentação da compra, com quantidade, preço unitário e total. A Application grava saldo e movimentação no mesmo `SaveChanges`. A descrição gravada é “Compra”; a tela de histórico mostra o nome do produto, a quantidade, o preço unitário e o total.
+A compra é outro método do domínio. A quantidade é um inteiro maior ou igual a 1. O total é o preço unitário vezes essa quantidade. Se o saldo for menor que o total, rejeita antes de alterar o cartão. Caso contrário, debita o total e cria a movimentação da compra, com quantidade, preço unitário e total. A Application grava saldo e movimentação no mesmo `SaveChanges`. A descrição gravada é “Compra”; a tela de histórico mostra o nome do produto, a quantidade, o preço unitário e o total. O cancelamento credita esse total, grava a data de cancelamento e cria o estorno no mesmo `SaveChanges`. A resposta leva as datas em UTC.
 
 ## Frontend
 

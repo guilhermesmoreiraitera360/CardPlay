@@ -209,6 +209,96 @@ public class CartaoTestes
         Assert.Null(Assert.Single(cartao.Movimentacoes).ProdutoId);
     }
 
+    [Fact]
+    public void CancelarCompra_Saldo30AposCompraDe20_Credita20MarcaECriaUmEstorno()
+    {
+        var cartao = Cartao.Solicitar("Nara");
+        cartao.Recarregar(50m, "Recarga");
+        var compra = cartao.Comprar(ProdutoDeTeste(20m));
+        var antes = DateTime.UtcNow;
+
+        var estorno = cartao.CancelarCompra(compra.Id);
+
+        Assert.Equal(50m, cartao.Saldo);
+        Assert.Equal(20m, compra.Valor);
+        Assert.Equal(1, compra.Quantidade);
+        Assert.Equal(20m, compra.PrecoUnitario);
+        Assert.Equal("Compra", compra.Descricao);
+        Assert.NotNull(compra.DataCancelamento);
+        Assert.InRange(compra.DataCancelamento.Value, antes, DateTime.UtcNow);
+        Assert.Equal(20m, estorno.Valor);
+        Assert.Equal("Estorno", estorno.Descricao);
+        Assert.Equal(compra.Id, estorno.CompraId);
+        Assert.Equal(cartao.Id, estorno.CartaoId);
+        Assert.Null(estorno.NomeProduto);
+        Assert.Null(estorno.ProdutoId);
+        Assert.Null(estorno.Quantidade);
+        Assert.Null(estorno.PrecoUnitario);
+        Assert.Equal(3, cartao.Movimentacoes.Count);
+    }
+
+    [Fact]
+    public void CancelarCompra_QuantidadeMaiorQueUm_CreditaOTotalUmaVez()
+    {
+        var cartao = Cartao.Solicitar("Otto");
+        cartao.Recarregar(100m, "Recarga");
+        var compra = cartao.Comprar(ProdutoDeTeste(20m), 3m);
+
+        var estorno = cartao.CancelarCompra(compra.Id);
+
+        Assert.Equal(100m, cartao.Saldo);
+        Assert.Equal(60m, estorno.Valor);
+        Assert.Equal(3, compra.Quantidade);
+        Assert.Equal(20m, compra.PrecoUnitario);
+        Assert.Equal(60m, compra.Valor);
+    }
+
+    [Fact]
+    public void CancelarCompra_Repetida_NaoCreditaDeNovoNemCriaOutroEstorno()
+    {
+        var cartao = Cartao.Solicitar("Paula");
+        cartao.Recarregar(50m, "Recarga");
+        var compra = cartao.Comprar(ProdutoDeTeste(20m));
+        cartao.CancelarCompra(compra.Id);
+
+        var excecao = Assert.Throws<CompraJaCanceladaException>(() => cartao.CancelarCompra(compra.Id));
+
+        Assert.Equal("Esta compra já foi cancelada.", excecao.Message);
+        Assert.Equal(50m, cartao.Saldo);
+        Assert.Equal(3, cartao.Movimentacoes.Count);
+        Assert.Single(cartao.Movimentacoes, movimentacao => movimentacao.Descricao == "Estorno");
+    }
+
+    [Fact]
+    public void CancelarCompra_IdAusenteOuRecarga_NaoAlteraOCartao()
+    {
+        var cartao = Cartao.Solicitar("Rita");
+        cartao.Recarregar(50m, "Recarga");
+        var recarga = Assert.Single(cartao.Movimentacoes);
+
+        var idAusente = Assert.Throws<CompraNaoCancelavelException>(() => cartao.CancelarCompra(Guid.NewGuid()));
+        var recargaRecusada = Assert.Throws<CompraNaoCancelavelException>(() => cartao.CancelarCompra(recarga.Id));
+
+        Assert.Equal("Não há compra deste cartão para cancelar.", idAusente.Message);
+        Assert.Equal(idAusente.Message, recargaRecusada.Message);
+        Assert.Equal(50m, cartao.Saldo);
+        Assert.Null(Assert.Single(cartao.Movimentacoes).ProdutoId);
+    }
+
+    [Fact]
+    public void CancelarCompra_NaoUsaPrecoDeOutroProduto()
+    {
+        var cartao = Cartao.Solicitar("Sara");
+        cartao.Recarregar(50m, "Recarga");
+        var compra = cartao.Comprar(ProdutoDeTeste(20m));
+        _ = ProdutoDeTeste(25m);
+
+        var estorno = cartao.CancelarCompra(compra.Id);
+
+        Assert.Equal(20m, estorno.Valor);
+        Assert.Equal(50m, cartao.Saldo);
+    }
+
     private static Produto ProdutoDeTeste(decimal preco)
     {
         return new Produto(

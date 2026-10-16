@@ -1,0 +1,100 @@
+===== 01-cartao-a =====
+REQUEST POST http://localhost:5080/api/cartoes
+{"nomeTitular": "Etapa Quatro"}
+RESPONSE
+{"id":"96f8f1fc-9d8d-4f89-be7a-028e43fa6cda","nomeTitular":"Etapa Quatro","codigoAmigavel":"CP-T6P8MK","saldo":0,"dataCriacao":"2026-10-16T12:59:44.5941072Z"}
+HTTP_STATUS:201
+
+===== 02-recarga-50 =====
+REQUEST POST http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/recargas
+{"valor": 50, "descricao": "Recarga"}
+RESPONSE
+{"id":"96f8f1fc-9d8d-4f89-be7a-028e43fa6cda","nomeTitular":"Etapa Quatro","codigoAmigavel":"CP-T6P8MK","saldo":50.0,"dataCriacao":"2026-10-16T12:59:44.5941072"}
+HTTP_STATUS:200
+
+===== 03-movimentacoes-antes =====
+REQUEST GET http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/movimentacoes
+RESPONSE
+[{"id":"2884f07b-ecbb-47b7-8953-f4acf194143d","valor":50.0,"descricao":"Recarga","dataHora":"2026-10-16T12:59:45.013794","produtoId":null,"nomeProduto":null,"quantidade":null,"precoUnitario":null,"dataCancelamento":null,"compraId":null}]
+HTTP_STATUS:200
+
+===== 04-compra-cafe =====
+REQUEST POST http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/compras
+{"produtoId": "6f1c2a7e-0c4a-4b1d-9e2f-1a2b3c4d5e6f", "quantidade": 1, "precoUnitarioVisto": 8.5}
+RESPONSE
+{"cartaoId":"96f8f1fc-9d8d-4f89-be7a-028e43fa6cda","saldo":41.5,"registro":{"id":"254b4518-d27c-4a62-a734-a8ce06fe658b","valor":8.5,"descricao":"Compra","dataHora":"2026-10-16T12:59:45.1101894Z","produtoId":"6f1c2a7e-0c4a-4b1d-9e2f-1a2b3c4d5e6f","nomeProduto":"Café especial","quantidade":1,"precoUnitario":8.5,"dataCancelamento":null,"compraId":null}}
+HTTP_STATUS:200
+
+===== 05-cancelamento =====
+REQUEST POST http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/compras/254b4518-d27c-4a62-a734-a8ce06fe658b/cancelamento
+RESPONSE
+{"cartaoId":"96f8f1fc-9d8d-4f89-be7a-028e43fa6cda","saldo":50.0,"registro":{"id":"1b6e7838-b6b6-4148-8344-f94a16ba574e","valor":8.5,"descricao":"Estorno","dataHora":"2026-10-16T12:59:45.1305579Z","produtoId":null,"nomeProduto":null,"quantidade":null,"precoUnitario":null,"dataCancelamento":null,"compraId":"254b4518-d27c-4a62-a734-a8ce06fe658b"}}
+HTTP_STATUS:200
+
+===== 06-movimentacoes-depois =====
+REQUEST GET http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/movimentacoes
+RESPONSE
+[{"id":"1b6e7838-b6b6-4148-8344-f94a16ba574e","valor":8.5,"descricao":"Estorno","dataHora":"2026-10-16T12:59:45.1305579","produtoId":null,"nomeProduto":null,"quantidade":null,"precoUnitario":null,"dataCancelamento":null,"compraId":"254b4518-d27c-4a62-a734-a8ce06fe658b"},{"id":"254b4518-d27c-4a62-a734-a8ce06fe658b","valor":8.5,"descricao":"Compra","dataHora":"2026-10-16T12:59:45.1101894","produtoId":"6f1c2a7e-0c4a-4b1d-9e2f-1a2b3c4d5e6f","nomeProduto":"Café especial","quantidade":1,"precoUnitario":8.5,"dataCancelamento":"2026-10-16T12:59:45.1304222","compraId":null},{"id":"2884f07b-ecbb-47b7-8953-f4acf194143d","valor":50.0,"descricao":"Recarga","dataHora":"2026-10-16T12:59:45.013794","produtoId":null,"nomeProduto":null,"quantidade":null,"precoUnitario":null,"dataCancelamento":null,"compraId":null}]
+HTTP_STATUS:200
+
+===== 07-repeticao =====
+REQUEST POST http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/compras/254b4518-d27c-4a62-a734-a8ce06fe658b/cancelamento
+RESPONSE
+{"type":"CompraJaCanceladaException","title":"Conflito","status":409,"detail":"Esta compra já foi cancelada."}
+HTTP_STATUS:409
+
+===== 08-cartao-a-depois-da-repeticao =====
+REQUEST GET http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda
+RESPONSE
+{"id":"96f8f1fc-9d8d-4f89-be7a-028e43fa6cda","nomeTitular":"Etapa Quatro","codigoAmigavel":"CP-T6P8MK","saldo":50.0,"dataCriacao":"2026-10-16T12:59:44.5941072"}
+HTTP_STATUS:200
+
+===== 09-cartao-b =====
+REQUEST POST http://localhost:5080/api/cartoes
+{"nomeTitular": "Outro Cartao"}
+RESPONSE
+{"id":"e5850631-9b09-4c5d-b017-9b7daf00cb3f","nomeTitular":"Outro Cartao","codigoAmigavel":"CP-8GKTTY","saldo":0,"dataCriacao":"2026-10-16T12:59:45.1593299Z"}
+HTTP_STATUS:201
+
+===== 10-recarga-b =====
+REQUEST POST http://localhost:5080/api/cartoes/e5850631-9b09-4c5d-b017-9b7daf00cb3f/recargas
+{"valor": 10, "descricao": "Recarga"}
+RESPONSE
+{"id":"e5850631-9b09-4c5d-b017-9b7daf00cb3f","nomeTitular":"Outro Cartao","codigoAmigavel":"CP-8GKTTY","saldo":10.0,"dataCriacao":"2026-10-16T12:59:45.1593299"}
+HTTP_STATUS:200
+
+===== 11-compra-de-a-pedida-por-b =====
+REQUEST POST http://localhost:5080/api/cartoes/e5850631-9b09-4c5d-b017-9b7daf00cb3f/compras/254b4518-d27c-4a62-a734-a8ce06fe658b/cancelamento
+RESPONSE
+{"type":"CompraNaoCancelavelException","title":"Recurso não encontrado","status":404,"detail":"Não há compra deste cartão para cancelar."}
+HTTP_STATUS:404
+
+===== 12-cartao-a-saldo =====
+REQUEST GET http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda
+RESPONSE
+{"id":"96f8f1fc-9d8d-4f89-be7a-028e43fa6cda","nomeTitular":"Etapa Quatro","codigoAmigavel":"CP-T6P8MK","saldo":50.0,"dataCriacao":"2026-10-16T12:59:44.5941072"}
+HTTP_STATUS:200
+
+===== 13-cartao-b-saldo =====
+REQUEST GET http://localhost:5080/api/cartoes/e5850631-9b09-4c5d-b017-9b7daf00cb3f
+RESPONSE
+{"id":"e5850631-9b09-4c5d-b017-9b7daf00cb3f","nomeTitular":"Outro Cartao","codigoAmigavel":"CP-8GKTTY","saldo":10.0,"dataCriacao":"2026-10-16T12:59:45.1593299"}
+HTTP_STATUS:200
+
+===== 14-id-de-recarga =====
+REQUEST POST http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/compras/2884f07b-ecbb-47b7-8953-f4acf194143d/cancelamento
+RESPONSE
+{"type":"CompraNaoCancelavelException","title":"Recurso não encontrado","status":404,"detail":"Não há compra deste cartão para cancelar."}
+HTTP_STATUS:404
+
+===== 15-id-inexistente =====
+REQUEST POST http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda/compras/00000000-0000-0000-0000-000000000099/cancelamento
+RESPONSE
+{"type":"CompraNaoCancelavelException","title":"Recurso não encontrado","status":404,"detail":"Não há compra deste cartão para cancelar."}
+HTTP_STATUS:404
+
+===== 16-cartao-a-final =====
+REQUEST GET http://localhost:5080/api/cartoes/96f8f1fc-9d8d-4f89-be7a-028e43fa6cda
+RESPONSE
+{"id":"96f8f1fc-9d8d-4f89-be7a-028e43fa6cda","nomeTitular":"Etapa Quatro","codigoAmigavel":"CP-T6P8MK","saldo":50.0,"dataCriacao":"2026-10-16T12:59:44.5941072"}
+HTTP_STATUS:200

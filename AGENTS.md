@@ -45,7 +45,7 @@ Não crie referências circulares. Domain não referencia ASP.NET, EF Core nem o
 
 ### Responsabilidades
 
-- **Domain:** entidades (`Cartao`, `MovimentacaoCartao`, `Produto`) e regras essenciais. Recarga com valor `<= 0` é inválida. A compra debita o total, preço unitário vezes a quantidade escolhida, e cria o registro juntos, ou rejeita saldo insuficiente antes de alterar os dois. A quantidade é um inteiro maior ou igual a 1. O registro guarda a quantidade, o preço unitário e o total. O saldo e a movimentação nascem juntos no domínio.
+- **Domain:** entidades (`Cartao`, `MovimentacaoCartao`, `Produto`) e regras essenciais. Recarga com valor `<= 0` é inválida. A compra debita o total, preço unitário vezes a quantidade escolhida, e cria o registro juntos, ou rejeita saldo insuficiente antes de alterar os dois. A quantidade é um inteiro maior ou igual a 1. O registro guarda a quantidade, o preço unitário e o total. O saldo e a movimentação nascem juntos no domínio. Cancelar uma compra do mesmo cartão que ainda não foi cancelada credita o total debitado, grava a data de cancelamento e cria o estorno vinculado, juntos. O crédito é esse total gravado, uma vez, e não o preço atual do catálogo. Compra ausente nesse cartão, recarga ou compra já cancelada não alteram saldo nem movimentações.
 - **Application:** DTOs, contratos, mapeamentos e **orquestração dos casos de uso**. Sem infraestrutura e sem clientes HTTP externos.
 - **Repository:** DbContext, EF Core, SQLite, migrations, seed de produtos, repositórios concretos.
 - **Services:** apenas clientes de APIs e serviços externos. Nesta versão não há integrações externas; não coloque casos de uso aqui.
@@ -68,7 +68,7 @@ Código em português (`Cartao`, `Produto`, `CartoesController`, `/api/cartoes`)
 - Datas em UTC.
 - Não armazene PAN, CVV, credenciais ou secrets.
 - Não implemente estoque, carrinho, checkout, autenticação ou integração bancária nesta versão.
-- O botão “Usar cartão” permanece visível. Com cartão no contexto, a quantidade é escolhida no card e a confirmação mostra produto, quantidade, preço unitário e total. Sem cartão, permanece desabilitado.
+- O botão “Usar cartão” permanece visível. Com cartão no contexto, a quantidade é escolhida no card e a confirmação mostra produto, quantidade, preço unitário e total. “Cancelar” nesse aviso só desiste da compra. Sem cartão, permanece desabilitado.
 
 ## Persistência
 
@@ -79,7 +79,7 @@ A API aplica migrations na subida. Novas migrations:
 dotnet ef migrations add Nome --project backend/src/CardPlay.Repository --startup-project backend/src/CardPlay.Api --output-dir Migrations
 ```
 
-Uma recarga e uma compra precisam persistir saldo e movimentação no mesmo `SaveChanges`.
+Uma recarga, uma compra e um cancelamento precisam persistir saldo e movimentação no mesmo `SaveChanges`. No cancelamento, o mesmo gravar inclui o crédito, a data de cancelamento e o estorno.
 
 ## Frontend
 
@@ -87,7 +87,7 @@ Uma recarga e uma compra precisam persistir saldo e movimentação no mesmo `Sav
 - URL apenas em `mobile/src/config/ambiente.ts` (`EXPO_PUBLIC_API_URL`).
 - O id do cartão selecionado fica no AsyncStorage.
 - Cores só em `mobile/src/tema/cores.ts`. Azul = identidade e navegação. Laranja = saldo, preços, recarga e compra. Vermelho só para erro.
-- O histórico mostra a compra com nome do produto, quantidade, preço unitário e total sem “+”. A recarga continua com a descrição e com “+”.
+- O histórico mostra a compra com nome do produto, quantidade, preço unitário e total sem “+”. A compra cancelada ganha a linha “Cancelada” e perde o botão “Cancelar compra”. O estorno mostra “+” e o nome da compra ligada. A recarga continua com a descrição e com “+”. Desistir do aviso de cancelamento não chama a API.
 - A barra inferior precisa mostrar ícone e rótulo por completo, acima da área segura. Não reduza a altura se isso cortar o texto.
 - Conteúdo das telas respeita o recorte superior (`usePaddingTela`).
 - Catálogo: um produto por linha abaixo de 720px; duas colunas a partir disso.
@@ -119,6 +119,9 @@ Mínimo esperado:
 - compra com saldo suficiente debita o total e registra produto, quantidade, preço unitário, total e data
 - compra com saldo igual ao total termina em zero
 - compra com saldo insuficiente não debita nem registra compra
+- cancelamento de compra credita o total uma vez, marca a compra e registra um estorno
+- repetir o cancelamento não credita de novo
+- compra de outro cartão, ausente ou já cancelada não altera saldo
 
 ## Validação
 

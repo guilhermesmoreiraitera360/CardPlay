@@ -15,8 +15,9 @@ public class TratadorExcecoes : IExceptionHandler
         {
             RecargaInvalidaException or NomeTitularInvalidoException or SaldoInsuficienteException
                 or QuantidadeInvalidaException or EstouroDeTotalException => (StatusCodes.Status400BadRequest, "Requisição inválida"),
-            PrecoAlteradoException => (StatusCodes.Status409Conflict, "Conflito"),
-            CartaoNaoEncontradoException or ProdutoNaoEncontradoException => (StatusCodes.Status404NotFound, "Recurso não encontrado"),
+            PrecoAlteradoException or CompraJaCanceladaException => (StatusCodes.Status409Conflict, "Conflito"),
+            CartaoNaoEncontradoException or ProdutoNaoEncontradoException
+                or CompraNaoCancelavelException => (StatusCodes.Status404NotFound, "Recurso não encontrado"),
             _ => (StatusCodes.Status500InternalServerError, "Erro interno")
         };
 

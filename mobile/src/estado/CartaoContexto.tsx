@@ -12,8 +12,25 @@ type CartaoContextoValor = {
   solicitar: (nomeTitular: string) => Promise<void>;
   recarregar: (valor: number, descricao?: string) => Promise<void>;
   comprar: (produtoId: string, quantidade: number, precoUnitarioVisto: number) => Promise<Compra>;
+  cancelar: (compraId: string) => Promise<Compra>;
   atualizar: () => Promise<void>;
 };
+
+function aplicarCancelamentoLocal(
+  lista: Movimentacao[],
+  compraId: string,
+  estorno: Movimentacao,
+): Movimentacao[] {
+  const marcada = lista.map((item) =>
+    item.id === compraId && (item.dataCancelamento == null || item.dataCancelamento === '')
+      ? { ...item, dataCancelamento: estorno.dataHora }
+      : item,
+  );
+  if (marcada.some((item) => item.id === estorno.id)) {
+    return marcada;
+  }
+  return [estorno, ...marcada];
+}
 
 const CartaoContexto = createContext<CartaoContextoValor | undefined>(undefined);
 
@@ -108,9 +125,31 @@ export function CartaoProvider({ children }: { children: ReactNode }) {
     return compra;
   }, [cartao]);
 
+  const cancelar = useCallback(async (compraId: string) => {
+    if (!cartao) {
+      throw new Error('Solicite um cartão antes de cancelar.');
+    }
+
+    setErro(null);
+    const cancelamento = await cartaoApi.cancelar(cartao.id, compraId);
+    setCartao({ ...cartao, saldo: cancelamento.saldo });
+    setMovimentacoes((atuais) => aplicarCancelamentoLocal(atuais, compraId, cancelamento.registro));
+    try {
+      const historico = await cartaoApi.listarMovimentacoes(cartao.id);
+      setMovimentacoes(historico);
+    } catch (falha) {
+      const mensagem = falha instanceof ErroApi
+        ? `O cancelamento foi registrado. ${falha.message}`
+        : 'O cancelamento foi registrado. Não foi possível atualizar a lista.';
+      setErro(mensagem);
+      throw new Error(mensagem);
+    }
+    return cancelamento;
+  }, [cartao]);
+
   const valor = useMemo(
-    () => ({ cartao, movimentacoes, carregando, erro, solicitar, recarregar, comprar, atualizar }),
-    [cartao, movimentacoes, carregando, erro, solicitar, recarregar, comprar, atualizar],
+    () => ({ cartao, movimentacoes, carregando, erro, solicitar, recarregar, comprar, cancelar, atualizar }),
+    [cartao, movimentacoes, carregando, erro, solicitar, recarregar, comprar, cancelar, atualizar],
   );
 
   return <CartaoContexto.Provider value={valor}>{children}</CartaoContexto.Provider>;

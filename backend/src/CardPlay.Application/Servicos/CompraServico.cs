@@ -59,4 +59,34 @@ public class CompraServico : ICompraServico
             Registro = MapeadorCartao.ParaResposta(movimentacao)
         };
     }
+
+    public async Task<CompraResposta> CancelarAsync(
+        Guid cartaoId,
+        Guid compraId,
+        CancellationToken cancellationToken = default)
+    {
+        var cartao = await _cartaoRepositorio.ObterPorIdAsync(cartaoId, cancellationToken);
+        if (cartao is null)
+        {
+            throw new CartaoNaoEncontradoException(cartaoId);
+        }
+
+        var estorno = cartao.CancelarCompra(compraId);
+        _cartaoRepositorio.AdicionarMovimentacao(estorno);
+        try
+        {
+            await _cartaoRepositorio.SalvarAlteracoesAsync(cancellationToken);
+        }
+        catch (Exception excecao) when (excecao is not OperationCanceledException)
+        {
+            throw new CancelamentoNaoConcluidoException(excecao);
+        }
+
+        return new CompraResposta
+        {
+            CartaoId = cartao.Id,
+            Saldo = cartao.Saldo,
+            Registro = MapeadorCartao.ParaResposta(estorno)
+        };
+    }
 }

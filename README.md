@@ -17,9 +17,10 @@ O prompt que originou este estado inicial está em [docs/exemplo-prompt-criacao.
 - Solicitar um cartão informando o nome
 - Visualizar titular, código amigável e saldo
 - Recarregar saldo (valor maior que zero)
-- Consultar o histórico de recargas e de compras
+- Consultar o histórico de recargas, de compras e de estornos
 - Ver produtos cadastrados por seed
 - Comprar um produto com o saldo, depois de escolher a quantidade. A confirmação mostra o produto, a quantidade, o preço unitário e o total. Sem cartão, o botão **Usar cartão** fica visível e desabilitado
+- Cancelar uma compra concluída ainda não cancelada, a partir do Histórico. O estorno é o total debitado. **Cancelar** no aviso de **Usar cartão** só desiste da compra
 
 ## Arquitetura resumida
 
@@ -154,7 +155,7 @@ Regras completas: [docs/ui.md](docs/ui.md).
 dotnet test backend/CardPlay.sln
 ```
 
-Os testes cobrem criação válida de cartão, recarga inválida, atualização de saldo, registro da movimentação, compra que debita o total, saldo igual ao total e saldo insuficiente sem débito.
+Os testes cobrem criação válida de cartão, recarga inválida, atualização de saldo, registro da movimentação, compra que debita o total, saldo igual ao total, saldo insuficiente sem débito, cancelamento que devolve o total uma vez e falha de gravação do cancelamento sem crédito.
 
 ## Endpoints
 
@@ -163,6 +164,7 @@ Os testes cobrem criação válida de cartão, recarga inválida, atualização 
 | POST | `/api/cartoes` | Solicitar cartão |
 | GET | `/api/cartoes/{id}` | Consultar cartão |
 | POST | `/api/cartoes/{id}/recargas` | Recarga |
-| GET | `/api/cartoes/{id}/movimentacoes` | Histórico de recargas e compras |
+| GET | `/api/cartoes/{id}/movimentacoes` | Histórico de recargas, compras e estornos |
 | POST | `/api/cartoes/{id}/compras` | Comprar um produto com o saldo |
+| POST | `/api/cartoes/{id}/compras/{compraId}/cancelamento` | Cancelar uma compra e estornar o total debitado |
 | GET | `/api/produtos` | Catálogo |

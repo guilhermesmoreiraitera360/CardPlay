@@ -226,6 +226,135 @@ public class CompraServicoTestes
             id => cartao.Movimentacoes.Single(movimentacao => movimentacao.Id == id).ProdutoId != null);
     }
 
+    [Fact]
+    public async Task CancelarAsync_CompraDe20ComSaldo30_CreditaEGravaUmaVez()
+    {
+        var cartoes = new CartaoRepositorioEmMemoria();
+        var cartao = CartaoComSaldo(50m);
+        var compra = cartao.Comprar(ProdutoDeTeste(20m));
+        await cartoes.AdicionarAsync(cartao);
+        var servico = new CompraServico(cartoes, new ProdutoRepositorioEmMemoria());
+
+        var resposta = await servico.CancelarAsync(cartao.Id, compra.Id);
+
+        Assert.Equal(50m, resposta.Saldo);
+        Assert.Equal(cartao.Id, resposta.CartaoId);
+        Assert.Equal(1, cartoes.VezesSalvo);
+        Assert.NotNull(compra.DataCancelamento);
+        Assert.Equal(20m, compra.Valor);
+        Assert.Equal("Compra", compra.Descricao);
+        var estorno = Assert.Single(cartao.Movimentacoes, movimentacao => movimentacao.Descricao == "Estorno");
+        Assert.Equal(20m, estorno.Valor);
+        Assert.Equal(compra.Id, estorno.CompraId);
+        Assert.Null(estorno.NomeProduto);
+    }
+
+    [Fact]
+    public async Task CancelarAsync_Quantidade3_CreditaOTotalEGravaUmaVez()
+    {
+        var cartoes = new CartaoRepositorioEmMemoria();
+        var cartao = CartaoComSaldo(100m);
+        var compra = cartao.Comprar(ProdutoDeTeste(20m), 3m);
+        await cartoes.AdicionarAsync(cartao);
+        var servico = new CompraServico(cartoes, new ProdutoRepositorioEmMemoria());
+
+        var resposta = await servico.CancelarAsync(cartao.Id, compra.Id);
+
+        Assert.Equal(100m, resposta.Saldo);
+        Assert.Equal(1, cartoes.VezesSalvo);
+        var estorno = Assert.Single(cartao.Movimentacoes, movimentacao => movimentacao.CompraId == compra.Id);
+        Assert.Equal(60m, estorno.Valor);
+        Assert.Null(estorno.NomeProduto);
+        Assert.Equal(3, compra.Quantidade);
+    }
+
+    [Fact]
+    public async Task CancelarAsync_IdAusente_NaoGrava()
+    {
+        var cartoes = new CartaoRepositorioEmMemoria();
+        var cartao = CartaoComSaldo(50m);
+        var compra = cartao.Comprar(ProdutoDeTeste(20m));
+        await cartoes.AdicionarAsync(cartao);
+        var servico = new CompraServico(cartoes, new ProdutoRepositorioEmMemoria());
+
+        await Assert.ThrowsAsync<CompraNaoCancelavelException>(() =>
+            servico.CancelarAsync(cartao.Id, Guid.NewGuid()));
+
+        Assert.Equal(30m, cartao.Saldo);
+        Assert.Equal(0, cartoes.VezesSalvo);
+        Assert.Null(compra.DataCancelamento);
+        Assert.DoesNotContain(cartao.Movimentacoes, movimentacao => movimentacao.Descricao == "Estorno");
+    }
+
+    [Fact]
+    public async Task CancelarAsync_Recarga_NaoGrava()
+    {
+        var cartoes = new CartaoRepositorioEmMemoria();
+        var cartao = CartaoComSaldo(50m);
+        var recarga = Assert.Single(cartao.Movimentacoes);
+        await cartoes.AdicionarAsync(cartao);
+        var servico = new CompraServico(cartoes, new ProdutoRepositorioEmMemoria());
+
+        await Assert.ThrowsAsync<CompraNaoCancelavelException>(() =>
+            servico.CancelarAsync(cartao.Id, recarga.Id));
+
+        Assert.Equal(50m, cartao.Saldo);
+        Assert.Equal(0, cartoes.VezesSalvo);
+        Assert.DoesNotContain(cartao.Movimentacoes, movimentacao => movimentacao.Descricao == "Estorno");
+    }
+
+    [Fact]
+    public async Task CancelarAsync_CompraDeOutroCartao_NaoGravaNenhumDosDois()
+    {
+        var cartoes = new CartaoRepositorioEmMemoria();
+        var cartaoA = CartaoComSaldo(50m);
+        var compra = cartaoA.Comprar(ProdutoDeTeste(20m));
+        var cartaoB = CartaoComSaldo(10m);
+        await cartoes.AdicionarAsync(cartaoA);
+        await cartoes.AdicionarAsync(cartaoB);
+        var servico = new CompraServico(cartoes, new ProdutoRepositorioEmMemoria());
+
+        await Assert.ThrowsAsync<CompraNaoCancelavelException>(() =>
+            servico.CancelarAsync(cartaoB.Id, compra.Id));
+
+        Assert.Equal(30m, cartaoA.Saldo);
+        Assert.Equal(10m, cartaoB.Saldo);
+        Assert.Equal(0, cartoes.VezesSalvo);
+        Assert.Null(compra.DataCancelamento);
+        Assert.DoesNotContain(cartaoA.Movimentacoes, movimentacao => movimentacao.Descricao == "Estorno");
+        Assert.DoesNotContain(cartaoB.Movimentacoes, movimentacao => movimentacao.Descricao == "Estorno");
+    }
+
+    [Fact]
+    public async Task CancelarAsync_CompraJaCancelada_NaoGravaDeNovo()
+    {
+        var cartoes = new CartaoRepositorioEmMemoria();
+        var cartao = CartaoComSaldo(50m);
+        var compra = cartao.Comprar(ProdutoDeTeste(20m));
+        await cartoes.AdicionarAsync(cartao);
+        var servico = new CompraServico(cartoes, new ProdutoRepositorioEmMemoria());
+        await servico.CancelarAsync(cartao.Id, compra.Id);
+
+        await Assert.ThrowsAsync<CompraJaCanceladaException>(() =>
+            servico.CancelarAsync(cartao.Id, compra.Id));
+
+        Assert.Equal(50m, cartao.Saldo);
+        Assert.Equal(1, cartoes.VezesSalvo);
+        Assert.Single(cartao.Movimentacoes, movimentacao => movimentacao.Descricao == "Estorno");
+    }
+
+    [Fact]
+    public async Task CancelarAsync_CartaoAusente_NaoGrava()
+    {
+        var cartoes = new CartaoRepositorioEmMemoria();
+        var servico = new CompraServico(cartoes, new ProdutoRepositorioEmMemoria());
+
+        await Assert.ThrowsAsync<CartaoNaoEncontradoException>(() =>
+            servico.CancelarAsync(Guid.NewGuid(), Guid.NewGuid()));
+
+        Assert.Equal(0, cartoes.VezesSalvo);
+    }
+
     private static Cartao CartaoComSaldo(decimal saldo)
     {
         var cartao = Cartao.Solicitar("Helena");

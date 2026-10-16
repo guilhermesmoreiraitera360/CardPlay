@@ -10,4 +10,9 @@ public interface ICompraServico
         decimal quantidade,
         decimal precoUnitarioVisto,
         CancellationToken cancellationToken = default);
+
+    Task<CompraResposta> CancelarAsync(
+        Guid cartaoId,
+        Guid compraId,
+        CancellationToken cancellationToken = default);
 }

@@ -1,0 +1,69 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  CardPlay.Domain -> /home/guilherme/repos/ia360/backend/src/CardPlay.Domain/bin/Debug/net10.0/CardPlay.Domain.dll
+  CardPlay.Application -> /home/guilherme/repos/ia360/backend/src/CardPlay.Application/bin/Debug/net10.0/CardPlay.Application.dll
+  CardPlay.Repository -> /home/guilherme/repos/ia360/backend/src/CardPlay.Repository/bin/Debug/net10.0/CardPlay.Repository.dll
+  CardPlay.Tests -> /home/guilherme/repos/ia360/backend/tests/CardPlay.Tests/bin/Debug/net10.0/CardPlay.Tests.dll
+Test run for /home/guilherme/repos/ia360/backend/tests/CardPlay.Tests/bin/Debug/net10.0/CardPlay.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+/home/guilherme/repos/ia360/backend/tests/CardPlay.Tests/bin/Debug/net10.0/CardPlay.Tests.dll
+[xUnit.net 00:00:00.01] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.21]   Discovering: CardPlay.Tests
+[xUnit.net 00:00:00.35]   Discovered:  CardPlay.Tests
+[xUnit.net 00:00:00.44]   Starting:    CardPlay.Tests
+  Passed CardPlay.Tests.CartaoTestes.Recarregar_ValorValido_AtualizaSaldo [34 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_CartaoAusente_NaoGrava [30 ms]
+  Passed CardPlay.Tests.CartaoServicoTestes.RecarregarAsync_ValorValido_AtualizaSaldoERegistraMovimentacao [38 ms]
+  Passed CardPlay.Tests.CartaoTestes.Solicitar_ComNomeInvalido_Rejeita(nome: " ") [8 ms]
+  Passed CardPlay.Tests.CartaoTestes.Solicitar_ComNomeInvalido_Rejeita(nome: "A") [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Solicitar_ComNomeInvalido_Rejeita(nome: "") [< 1 ms]
+  Passed CardPlay.Tests.CartaoServicoTestes.RecarregarAsync_ValorInvalido_NaoAlteraSaldo [9 ms]
+  Passed CardPlay.Tests.CartaoServicoTestes.SolicitarAsync_PersisteCartaoComSaldoZero [3 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_QuantidadeInvalida_NaoGrava(quantidade: -1) [16 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_TotalEstouraDecimal_NaoAlteraSaldoNemRegistraCompra [8 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_QuantidadeInvalida_NaoGrava(quantidade: 1.5) [3 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_QuantidadeInvalida_NaoGrava(quantidade: 0) [< 1 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.CancelarAsync_IdAusente_NaoGrava [12 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_ProdutoAusente_NaoGravaEMantemSaldo [3 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_PrecoVistoDiferente_NaoGrava [4 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_SaldoIgualAoPreco_ConcluiComSaldoZero [28 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_Quantidade3_SaldoMaiorQueTotal_DebitaTotalERegistraUmaCompra [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.CancelarCompra_IdAusenteOuRecarga_NaoAlteraOCartao [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Recarregar_SemDescricao_UsaDescricaoPadrao [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Recarregar_ValorIgualOuInferiorAZero_Rejeita(valor: -1) [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Recarregar_ValorIgualOuInferiorAZero_Rejeita(valor: -15.5) [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Recarregar_ValorIgualOuInferiorAZero_Rejeita(valor: 0) [< 1 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_FalhaAoSalvar_InformaQueNaoConcluiuENaoGrava [9 ms]
+  Passed CardPlay.Tests.CartaoTestes.CancelarCompra_NaoUsaPrecoDeOutroProduto [< 1 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.CancelarAsync_Quantidade3_CreditaOTotalEGravaUmaVez [4 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.CancelarAsync_CompraJaCancelada_NaoGravaDeNovo [3 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.CancelarAsync_Recarga_NaoGrava [3 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.CancelarAsync_CompraDeOutroCartao_NaoGravaNenhumDosDois [4 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.CancelarAsync_CartaoAusente_NaoGrava [1 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_Quantidade3_SaldoIgualAoTotal_GravaComSaldoZero [7 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_SaldoMenorQuePreco_NaoGrava [5 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_SaldoMaiorQuePreco_DebitaPrecoERegistraCompra [33 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_Quantidade3_SaldoIgualAoTotal_ConcluiComSaldoZero [< 1 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.CancelarAsync_CompraDe20ComSaldo30_CreditaEGravaUmaVez [2 ms]
+  Passed CardPlay.Tests.CartaoTestes.Recarregar_ValorValido_RegistraMovimentacao [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_QuantidadeInvalida_NaoAlteraSaldoNemRegistraCompra(quantidade: 0) [3 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_Quantidade3_SaldoMaiorQueTotal_DebitaTotalEGravaUmaVez [4 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_QuantidadeInvalida_NaoAlteraSaldoNemRegistraCompra(quantidade: 1.5) [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_QuantidadeInvalida_NaoAlteraSaldoNemRegistraCompra(quantidade: -1) [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.CancelarCompra_Saldo30AposCompraDe20_Credita20MarcaECriaUmEstorno [1 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_SaldoMaiorQuePreco_DebitaEGravaUmaVez [3 ms]
+  Passed CardPlay.Tests.CartaoTestes.Solicitar_ComNomeValido_CriaCartaoComSaldoZero [3 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_SaldoIgualAoPreco_GravaComSaldoZero [1 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_SaldoMenorQuePreco_NaoAlteraSaldoNemRegistraCompra [< 1 ms]
+  Passed CardPlay.Tests.CompraServicoTestes.ComprarAsync_Quantidade3_SaldoMenorQueTotal_NaoGrava [1 ms]
+  Passed CardPlay.Tests.CartaoTestes.CancelarCompra_Repetida_NaoCreditaDeNovoNemCriaOutroEstorno [3 ms]
+  Passed CardPlay.Tests.CartaoTestes.Comprar_Quantidade3_SaldoMenorQueTotal_NaoAlteraSaldoNemRegistraCompra [< 1 ms]
+  Passed CardPlay.Tests.CartaoTestes.CancelarCompra_QuantidadeMaiorQueUm_CreditaOTotalUmaVez [< 1 ms]
+[xUnit.net 00:00:03.24]   Finished:    CardPlay.Tests
+  Passed CardPlay.Tests.FalhaGravacaoSqliteTestes.ComprarAsync_FalhaAoSalvar_RelendoSqlite_MantemSaldoENaoGravaCompra [2 s]
+  Passed CardPlay.Tests.FalhaGravacaoSqliteTestes.CancelarAsync_FalhaAoSalvar_RelendoSqlite_MantemSaldoSemMarcaESemEstorno [136 ms]
+
+Test Run Successful.
+Total tests: 50
+     Passed: 50
+ Total time: 4.2857 Seconds

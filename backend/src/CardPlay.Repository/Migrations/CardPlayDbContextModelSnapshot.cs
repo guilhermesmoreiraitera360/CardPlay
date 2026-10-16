@@ -52,6 +52,12 @@ namespace CardPlay.Repository.Migrations
                     b.Property<Guid>("CartaoId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("CompraId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DataCancelamento")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DataHora")
                         .HasColumnType("TEXT");
 

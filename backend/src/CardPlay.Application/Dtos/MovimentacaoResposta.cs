@@ -10,4 +10,6 @@ public class MovimentacaoResposta
     public string? NomeProduto { get; init; }
     public int? Quantidade { get; init; }
     public decimal? PrecoUnitario { get; init; }
+    public DateTime? DataCancelamento { get; init; }
+    public Guid? CompraId { get; init; }
 }

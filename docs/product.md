@@ -7,9 +7,10 @@ CardPlay é uma plataforma lúdica interna. O cartão não representa um cartão
 1. Solicitar um cartão virtual informando o próprio nome.
 2. Ver o cartão com nome do titular, código amigável e saldo (inicia em zero).
 3. Adicionar saldo com uma recarga simulada, desde que o valor seja maior que zero.
-4. Consultar o histórico das recargas e das compras.
+4. Consultar o histórico das recargas, das compras e dos estornos.
 5. Percorrer um catálogo pequeno de produtos fictícios já cadastrados.
 6. Comprar um produto com o saldo do cartão, depois de escolher a quantidade e confirmar. A confirmação mostra o produto, a quantidade, o preço unitário e o total. O saldo final é o anterior menos o total. Se o saldo for igual ao total, fica zero. Se for menor, a compra não acontece e o saldo permanece.
+7. Cancelar uma compra concluída que ainda não foi cancelada, a partir do Histórico. O aviso mostra o produto, a quantidade, o preço unitário, o total pago e o estorno, que é o total debitado. Desistir não altera saldo nem histórico. Confirmar devolve esse total ao mesmo cartão, marca a compra como cancelada e registra um estorno ligado a ela. A compra original permanece. Repetir não credita de novo. O preço atual do catálogo não entra nesse valor.
 
 ## O que esta versão não faz
 

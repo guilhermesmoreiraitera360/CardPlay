@@ -22,6 +22,10 @@ export const cartaoApi = {
     });
   },
 
+  cancelar(id: string, compraId: string): Promise<Compra> {
+    return clienteHttp.postSemCorpo<Compra>(`/api/cartoes/${id}/compras/${compraId}/cancelamento`);
+  },
+
   listarMovimentacoes(id: string): Promise<Movimentacao[]> {
     return clienteHttp.get<Movimentacao[]>(`/api/cartoes/${id}/movimentacoes`);
   },

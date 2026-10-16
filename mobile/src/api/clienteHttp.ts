@@ -39,4 +39,8 @@ export const clienteHttp = {
       body: JSON.stringify(corpo),
     }).then((resposta) => tratar<T>(resposta));
   },
+
+  postSemCorpo<T>(caminho: string): Promise<T> {
+    return fetch(`${URL_API}${caminho}`, { method: 'POST' }).then((resposta) => tratar<T>(resposta));
+  },
 };
